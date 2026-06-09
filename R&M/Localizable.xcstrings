@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "All" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos"
+          }
+        }
+      }
+    },
     "characterList_cancel" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -137,6 +147,12 @@
         }
       }
     },
+    "EN" : {
+
+    },
+    "ES" : {
+
+    },
     "networkError_decodingFormat" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -190,6 +206,26 @@
     },
     "Rick & Morty" : {
 
+    },
+    "Species" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especias"
+          }
+        }
+      }
+    },
+    "Status" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estatus"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
