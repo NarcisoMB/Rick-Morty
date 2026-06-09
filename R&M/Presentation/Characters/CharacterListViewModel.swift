@@ -13,23 +13,42 @@ final class CharacterListViewModel {
     static let maxRetries = 3
 
     var characters: [Character] = []
-    var isLoading = false
+    
+	var isLoading = false
     var isLoadingMore = false
     var isRefreshing = false
-    var currentPage = 1
+    
+	var currentPage = 1
     var totalPages = 0
     var retryAttempt = 0
-    var alertError: String?
+    
+	var alertError: String?
     var searchText = ""
+    var filterStatus: String? = nil
+    var filterSpecies: String? = nil
+
+    var hasActiveFilter: Bool { filterStatus != nil || filterSpecies != nil }
+
+    var availableStatuses: [String] { Array(Set(characters.map { $0.status })).sorted() }
+    var availableSpecies:  [String] { Array(Set(characters.map { $0.species })).sorted() }
 
     var filteredCharacters: [Character] {
-        guard !searchText.trimmingCharacters(in: .whitespaces).isEmpty else { return characters }
-        let query = searchText.lowercased()
-        return characters.filter {
-            $0.name.lowercased().contains(query) ||
-            $0.status.lowercased().contains(query) ||
-            $0.species.lowercased().contains(query)
+        var result = characters
+        if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
+            let query = searchText.lowercased()
+            result = result.filter {
+                $0.name.lowercased().contains(query) ||
+                $0.status.lowercased().contains(query) ||
+                $0.species.lowercased().contains(query)
+            }
         }
+        if let status = filterStatus {
+            result = result.filter { $0.status == status }
+        }
+        if let species = filterSpecies {
+            result = result.filter { $0.species == species }
+        }
+        return result
     }
 
     private let useCase: GetCharactersUseCase
