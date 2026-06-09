@@ -14,12 +14,16 @@ struct ContentView: View {
         TabView {
             CharacterListView()
                 .tabItem {
-                    Label(lang.localized(LocalizationKeys.Tab.characters), systemImage: "person.3")
+					Label(self.lang.localized(LocalizationKeys.Tab.characters), systemImage: "person.3")
                 }
             FavoritesView()
                 .tabItem {
-                    Label(lang.localized(LocalizationKeys.Tab.favorites), systemImage: "heart")
+					Label(self.lang.localized(LocalizationKeys.Tab.favorites), systemImage: "heart")
                 }
+			SettingsView()
+				.tabItem {
+					Label(self.lang.localized(LocalizationKeys.Tab.settings), systemImage: "gear")
+				}
         }
     }
 }
@@ -28,4 +32,5 @@ struct ContentView: View {
     ContentView()
         .environment(LanguageManager.shared)
         .environment(FavoritesManager.shared)
+        .environment(BiometricAuthManager.shared)
 }

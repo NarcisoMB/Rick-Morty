@@ -14,6 +14,7 @@ struct R_MApp: App {
             ContentView()
                 .environment(LanguageManager.shared)
                 .environment(FavoritesManager.shared)
+                .environment(BiometricAuthManager.shared)
         }
     }
 }

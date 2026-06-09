@@ -10,9 +10,9 @@ import LocalAuthentication
 
 struct SettingsView: View {
 	@Environment(LanguageManager.self) private var lang
-	
+
 	@State private var viewModel = SettingsViewModel()
-	
+
 	var body: some View {
 		NavigationStack {
 			ScrollView {
@@ -30,7 +30,7 @@ struct SettingsView: View {
 				ToolbarItem {
 					VStack(spacing: 2) {
 						Text("Rick & Morty").foregroundStyle(.white)
-						Text("Settings").foregroundStyle(.white)
+						Text(self.lang.localized(LocalizationKeys.Settings.subtitle)).foregroundStyle(.white)
 					}
 					.frame(maxWidth: .infinity)
 					.padding(.vertical, 4)
@@ -41,33 +41,34 @@ struct SettingsView: View {
 			.toolbarColorScheme(.dark, for: .navigationBar)
 		}
 	}
-	
+
 	// MARK: - Language section
-	
 	private var languageSection: some View {
 		VStack(alignment: .leading, spacing: 0) {
-			Text("Language")
+			Text(self.lang.localized(LocalizationKeys.Settings.sectionLanguage))
 				.font(.caption)
 				.foregroundStyle(.secondary)
 				.padding(.horizontal, 12)
 				.padding(.bottom, 6)
-			
+
 			HStack(spacing: 12) {
 				Image(systemName: "globe")
 					.font(.title2)
 					.foregroundStyle(Color.accentColor)
 					.frame(width: 32)
-				
+
 				VStack(alignment: .leading, spacing: 2) {
-					Text(self.lang.language == "en" ? "English" : "Español")
+					Text(self.lang.language == "en"
+						 ? self.lang.localized(LocalizationKeys.Settings.languageEnglish)
+						 : self.lang.localized(LocalizationKeys.Settings.languageSpanish))
 						.font(.headline)
-					Text("Tap to switch language")
+					Text(self.lang.localized(LocalizationKeys.Settings.languageSwitchHint))
 						.font(.caption)
 						.foregroundStyle(.secondary)
 				}
-				
+
 				Spacer()
-				
+
 				Toggle("", isOn: Binding(
 					get: { self.lang.language == "es" },
 					set: { _ in self.lang.setLanguage(lang.language == "en" ? "es" : "en") }
@@ -81,23 +82,21 @@ struct SettingsView: View {
 			.clipShape(RoundedRectangle(cornerRadius: 12))
 		}
 	}
-	
+
 	// MARK: - Security section
-	
 	private var securitySection: some View {
 		VStack(alignment: .leading, spacing: 0) {
-			Text("Security")
+			Text(self.lang.localized(LocalizationKeys.Settings.sectionSecurity))
 				.font(.caption)
 				.foregroundStyle(.secondary)
 				.padding(.horizontal, 12)
 				.padding(.bottom, 6)
-			
+
 			biometricRow
 		}
 	}
-	
+
 	// MARK: - Biometric row
-	
 	private var biometricRow: some View {
 		VStack(spacing: 0) {
 			HStack(spacing: 12) {
@@ -105,7 +104,7 @@ struct SettingsView: View {
 					.font(.title2)
 					.foregroundStyle(self.statusColor)
 					.frame(width: 32)
-				
+
 				VStack(alignment: .leading, spacing: 2) {
 					Text(self.biometricTitle)
 						.font(.headline)
@@ -113,14 +112,15 @@ struct SettingsView: View {
 						.font(.caption)
 						.foregroundStyle(.secondary)
 				}
-				
+
 				Spacer()
-				
+
 				Toggle("", isOn: Binding(
 					get: { self.viewModel.isFaceIDEnabled },
 					set: { enabled in
 						if enabled {
-							Task { await self.viewModel.enableFaceID() }
+							let reason = self.lang.localized(LocalizationKeys.Settings.faceIDReason)
+							Task { await self.viewModel.enableFaceID(reason: reason) }
 						} else {
 							self.viewModel.disableFaceID()
 						}
@@ -132,14 +132,15 @@ struct SettingsView: View {
 			}
 			.padding(.horizontal, 12)
 			.padding(.vertical, 14)
-			
+
 			if self.viewModel.biometricStatus == .denied {
 				Divider().background(.secondary.opacity(0.3))
-				
+
 				Button {
 					UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
 				} label: {
-					Label("Open Settings to enable \(self.biometricTitle)", systemImage: "gear")
+					Label(LocalizationKeys.settingsOpenSettings(biometryName: biometricTitle, lang: lang),
+						  systemImage: "gear")
 						.font(.subheadline)
 						.frame(maxWidth: .infinity)
 				}
@@ -151,43 +152,48 @@ struct SettingsView: View {
 		.background(Color.rmCard)
 		.clipShape(RoundedRectangle(cornerRadius: 12))
 	}
-	
+
 	// MARK: - Computed helpers
 	private var biometricIcon: String {
 		switch self.viewModel.biometryType {
-		case .faceID: return "faceid"
+		case .faceID:  return "faceid"
 		case .touchID: return "touchid"
 		case .opticID: return "opticid"
-		default: return "lock.slash"
+		default:       return "lock.slash"
 		}
 	}
-	
+
 	private var biometricTitle: String {
 		switch self.viewModel.biometryType {
-		case .faceID: return "Face ID"
-		case .touchID: return "Touch ID"
-		case .opticID: return "Optic ID"
-		default: return "Biometrics"
+		case .faceID:  return lang.localized(LocalizationKeys.Settings.biometryFaceID)
+		case .touchID: return lang.localized(LocalizationKeys.Settings.biometryTouchID)
+		case .opticID: return lang.localized(LocalizationKeys.Settings.biometryOpticID)
+		default:       return lang.localized(LocalizationKeys.Settings.biometryGeneric)
 		}
 	}
-	
+
 	private var statusDescription: String {
 		switch self.viewModel.biometricStatus {
-		case .authorized: return "App can use \(biometricTitle)"
-		case .denied: return "Permission denied — enable in Settings"
-		case .notEnrolled: return "No biometrics enrolled on this device"
-		case .notAvailable: return "This device does not support biometrics"
-		case .locked: return "Too many failed attempts — try again later"
+		case .authorized:
+			return LocalizationKeys.settingsStatusAuthorized(biometryName: self.biometricTitle, lang: self.lang)
+		case .denied:
+			return self.lang.localized(LocalizationKeys.Settings.statusDenied)
+		case .notEnrolled:
+			return self.lang.localized(LocalizationKeys.Settings.statusNotEnrolled)
+		case .notAvailable:
+			return self.lang.localized(LocalizationKeys.Settings.statusNotAvailable)
+		case .locked:
+			return self.lang.localized(LocalizationKeys.Settings.statusLocked)
 		}
 	}
-	
+
 	private var statusColor: Color {
 		switch self.viewModel.biometricStatus {
-		case .authorized: return .green
-		case .denied: return .red
-		case .notEnrolled: return .yellow
+		case .authorized:   return .green
+		case .denied:       return .red
+		case .notEnrolled:  return .yellow
 		case .notAvailable: return .gray
-		case .locked: return .orange
+		case .locked:       return .orange
 		}
 	}
 }
