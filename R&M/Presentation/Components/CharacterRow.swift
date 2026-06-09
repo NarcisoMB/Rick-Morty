@@ -9,11 +9,15 @@ import SwiftUI
 
 struct CharacterRow: View {
     let character: Character
+    @Environment(LanguageManager.self) private var lang
     @Environment(FavoritesManager.self) private var favorites
+    @Environment(BiometricAuthManager.self) private var biometricAuth
+
+    @State private var showLockedAlert = false
 
     var body: some View {
         HStack(spacing: 12) {
-            CachedAsyncImage(url: character.image) { image in
+			CachedAsyncImage(url: self.character.image) { image in
                 image.resizable().scaledToFill()
             } placeholder: {
                 Color.gray.opacity(0.3)
@@ -22,28 +26,49 @@ struct CharacterRow: View {
             .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(character.name)
+				Text(self.character.name)
                     .font(.headline)
-                Text(character.species)
+				Text(self.character.species)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text(character.status)
+				Text(self.character.status)
                     .font(.caption)
-                    .foregroundStyle(character.statusColor)
+					.foregroundStyle(self.character.statusColor)
             }
 
             Spacer()
 
             Button {
-                favorites.toggle(character)
+				if self.favorites.isFavorite(self.character) {
+					Task { await self.removeWithAuth() }
+                } else {
+					self.favorites.toggle(self.character)
+                }
             } label: {
-                Image(systemName: favorites.isFavorite(character) ? "heart.fill" : "heart")
-                    .foregroundStyle(favorites.isFavorite(character) ? .red : .secondary)
+				Image(systemName: self.favorites.isFavorite(self.character) ? "heart.fill" : "heart")
+					.foregroundStyle(self.favorites.isFavorite(self.character) ? .red : .secondary)
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(Color.rmCard)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+		.alert(self.lang.localized(LocalizationKeys.Biometric.alertTitle), isPresented: self.$showLockedAlert) {
+			Button(self.lang.localized(LocalizationKeys.CharacterList.cancel), role: .cancel) {
+				self.biometricAuth.resetLock()
+            }
+        } message: {
+			Text(LocalizationKeys.biometricAlertMessage(attempts: BiometricAuthManager.maxAttempts, lang: self.lang))
+        }
+    }
+
+    private func removeWithAuth() async {
+		let reason = self.lang.localized(LocalizationKeys.Biometric.removeReason)
+		let authorized = await self.biometricAuth.authorizeRemoval(reason: reason)
+        if authorized {
+			self.favorites.toggle(character)
+		} else if self.biometricAuth.isLocked {
+			self.showLockedAlert = true
+        }
     }
 }
