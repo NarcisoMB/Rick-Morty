@@ -13,6 +13,6 @@ struct GetCharactersUseCase {
     }
 
     func execute(page: Int = 1) async throws -> CharacterPage {
-        try await repository.getCharacters(page: page)
+		try await self.repository.getCharacters(page: page)
     }
 }

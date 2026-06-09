@@ -17,10 +17,10 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
     var body: some View {
         ZStack {
             if let uiImage {
-                content(Image(uiImage: uiImage))
+				self.content(Image(uiImage: uiImage))
                     .transition(.opacity.animation(.easeIn(duration: 0.25)))
             } else {
-                placeholder()
+				self.placeholder()
                     .overlay(ShimmerView())
             }
         }
@@ -31,7 +31,7 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
         guard let url else { return }
 
         if let cached = ImageCache.shared.image(for: url) {
-            uiImage = cached
+			self.uiImage = cached
             return
         }
 
@@ -41,6 +41,6 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
         else { return }
 
         ImageCache.shared.store(loaded, for: url)
-        uiImage = loaded
+		self.uiImage = loaded
     }
 }

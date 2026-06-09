@@ -16,20 +16,20 @@ import Foundation
     private init() { load() }
 
     func toggle(_ character: Character) {
-        if isFavorite(character) {
-            favorites.removeAll { $0.id == character.id }
+		if self.isFavorite(character) {
+			self.favorites.removeAll { $0.id == character.id }
         } else {
-            favorites.append(character)
+			self.favorites.append(character)
         }
-        save()
+		self.save()
     }
 
     func isFavorite(_ character: Character) -> Bool {
-        favorites.contains { $0.id == character.id }
+		self.favorites.contains { $0.id == character.id }
     }
 
     private func save() {
-        guard let data = try? JSONEncoder().encode(favorites) else { return }
+		guard let data = try? JSONEncoder().encode(self.favorites) else { return }
         UserDefaults.standard.set(data, forKey: "rm_favorites")
     }
 
@@ -38,6 +38,6 @@ import Foundation
             let data = UserDefaults.standard.data(forKey: "rm_favorites"),
             let decoded = try? JSONDecoder().decode([Character].self, from: data)
         else { return }
-        favorites = decoded
+		self.favorites = decoded
     }
 }

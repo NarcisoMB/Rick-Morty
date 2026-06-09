@@ -33,19 +33,19 @@ final class CharacterListViewModel {
     var availableSpecies:  [String] { Array(Set(characters.map { $0.species })).sorted() }
 
     var filteredCharacters: [Character] {
-        var result = characters
-        if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
-            let query = searchText.lowercased()
+		var result = self.characters
+		if !self.searchText.trimmingCharacters(in: .whitespaces).isEmpty {
+			let query = self.searchText.lowercased()
             result = result.filter {
                 $0.name.lowercased().contains(query) ||
                 $0.status.lowercased().contains(query) ||
                 $0.species.lowercased().contains(query)
             }
         }
-        if let status = filterStatus {
+		if let status = self.filterStatus {
             result = result.filter { $0.status == status }
         }
-        if let species = filterSpecies {
+		if let species = self.filterSpecies {
             result = result.filter { $0.species == species }
         }
         return result
@@ -68,15 +68,19 @@ final class CharacterListViewModel {
         self.hasNextPage = true
         self.failedPage = nil
 
-        await withRetry { [weak self] in
-            guard let self else { return }
-            let page = try await self.useCase.execute(page: 1)
-            self.characters = page.characters
-            self.hasNextPage = page.hasNextPage
-            self.totalPages = page.totalPages
-        } onFailure: { [weak self] error in
-            self?.pendingRetryIsInitial = true
-            self?.alertError = error.localizedDescription
+		await withRetry { [weak self] in
+			guard let strongSelf = self else { return }
+			
+			let page = try await strongSelf.useCase.execute(page: 1)
+			strongSelf.characters = page.characters
+			strongSelf.hasNextPage = page.hasNextPage
+			strongSelf.totalPages = page.totalPages
+			
+		} onFailure: { [weak self] error in
+			guard let strongSelf = self else { return }
+			
+			strongSelf.pendingRetryIsInitial = true
+			strongSelf.alertError = error.localizedDescription
         }
 
         self.isLoading = false
@@ -96,40 +100,40 @@ final class CharacterListViewModel {
 
     func refresh() async {
         guard !isRefreshing, !isLoading else { return }
-        isRefreshing = true
-        alertError = nil
+		self.isRefreshing = true
+		self.alertError = nil
 
-        let pagesToRefresh = max(currentPage, 1)
+		let pagesToRefresh = max(self.currentPage, 1)
         var refreshed: [Character] = []
 
         for page in 1...pagesToRefresh {
             do {
-                let result = try await useCase.execute(page: page)
+				let result = try await self.useCase.execute(page: page)
                 refreshed += result.characters
                 if page == pagesToRefresh {
-                    hasNextPage = result.hasNextPage
-                    totalPages = result.totalPages
+					self.hasNextPage = result.hasNextPage
+					self.totalPages = result.totalPages
                 }
             } catch {
-                alertError = error.localizedDescription
+				self.alertError = error.localizedDescription
                 break
             }
         }
 
         if !refreshed.isEmpty {
-            characters = refreshed
+			self.characters = refreshed
         }
-        isRefreshing = false
+		self.isRefreshing = false
     }
 
     func retryFromAlert() async {
-        alertError = nil
-        if pendingRetryIsInitial {
-            await loadCharacters()
+		self.alertError = nil
+		if self.pendingRetryIsInitial {
+			await self.loadCharacters()
         } else {
-            guard let page = failedPage else { return }
+			guard let page = self.failedPage else { return }
             self.isLoadingMore = true
-            await fetchNextPage(page)
+			await self.fetchNextPage(page)
         }
     }
 
@@ -140,16 +144,19 @@ final class CharacterListViewModel {
         try? await Task.sleep(for: .seconds(1))
 
         await withRetry { [weak self] in
-            guard let self else { return }
-            let result = try await self.useCase.execute(page: page)
-            self.characters += result.characters
-            self.hasNextPage = result.hasNextPage
-            self.totalPages = result.totalPages
-            self.currentPage = page
+            guard let strongSelf = self else { return }
+            
+			let result = try await strongSelf.useCase.execute(page: page)
+			strongSelf.characters += result.characters
+			strongSelf.hasNextPage = result.hasNextPage
+			strongSelf.totalPages = result.totalPages
+			strongSelf.currentPage = page
         } onFailure: { [weak self] error in
-            self?.pendingRetryIsInitial = false
-            self?.failedPage = page
-            self?.alertError = error.localizedDescription
+			guard let strongSelf = self else { return }
+			
+			strongSelf.pendingRetryIsInitial = false
+			strongSelf.failedPage = page
+			strongSelf.alertError = error.localizedDescription
         }
 
         self.isLoadingMore = false

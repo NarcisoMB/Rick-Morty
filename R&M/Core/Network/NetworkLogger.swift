@@ -15,25 +15,25 @@ enum NetworkLogger {
     )
 
     static func logRequest(url: URL) {
-        logger.debug("┌── REQUEST ──────────────────────────")
-        logger.debug("│ GET \(url.absoluteString)")
-        logger.debug("└─────────────────────────────────────")
+		self.logger.debug("┌── REQUEST ──────────────────────────")
+		self.logger.debug("│ GET \(url.absoluteString)")
+		self.logger.debug("└─────────────────────────────────────")
     }
 
     static func logResponse(url: URL, statusCode: Int, data: Data) {
         let json = prettyJSON(from: data) ?? String(data: data, encoding: .utf8) ?? "<sin cuerpo>"
-        logger.debug("┌── RESPONSE ─────────────────────────")
-        logger.debug("│ \(statusCode) \(url.absoluteString)")
-        logger.debug("│ \(json)")
-        logger.debug("└─────────────────────────────────────")
+		self.logger.debug("┌── RESPONSE ─────────────────────────")
+		self.logger.debug("│ \(statusCode) \(url.absoluteString)")
+		self.logger.debug("│ \(json)")
+		self.logger.debug("└─────────────────────────────────────")
     }
 
     static func logRetry(attempt: Int, maxRetries: Int, error: Error) {
-        logger.warning("⚠ Reintento \(attempt)/\(maxRetries): \(error.localizedDescription)")
+		self.logger.warning("⚠ Reintento \(attempt)/\(maxRetries): \(error.localizedDescription)")
     }
 
     static func logError(error: Error) {
-        logger.error("✗ Error final: \(error.localizedDescription)")
+		self.logger.error("✗ Error final: \(error.localizedDescription)")
     }
 
     private static func prettyJSON(from data: Data) -> String? {

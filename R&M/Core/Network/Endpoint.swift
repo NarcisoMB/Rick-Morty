@@ -15,8 +15,8 @@ struct Endpoint {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "rickandmortyapi.com"
-        components.path = "/api" + path
-        components.queryItems = queryItems.isEmpty ? nil : queryItems
+		components.path = "/api" + self.path
+		components.queryItems = self.queryItems.isEmpty ? nil : self.queryItems
         return components.url
     }
 }

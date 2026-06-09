@@ -14,42 +14,44 @@ struct SearchFilterHeader: View {
     @Binding var searchText: String
     @Binding var filterStatus: String?
     @Binding var filterSpecies: String?
-    var availableStatuses: [String]
+    
+	var availableStatuses: [String]
     var availableSpecies: [String]
     var placeholder: String = ""
-    @FocusState.Binding var isSearchFocused: Bool
+    
+	@FocusState.Binding var isSearchFocused: Bool
 
     private var hasActiveFilter: Bool { filterStatus != nil || filterSpecies != nil }
     private var resolvedPlaceholder: String { placeholder.isEmpty ? lang.localized(LocalizationKeys.CharacterList.searchPlaceholder) : placeholder }
 
     var body: some View {
         VStack(spacing: 0) {
-            if showSearch {
-                searchBar
+			if self.showSearch {
+				searchBar
             }
-            if !showSearch && !searchText.isEmpty {
-                searchChip
+			if !self.showSearch && !self.searchText.isEmpty {
+				searchChip
             }
-            if hasActiveFilter {
-                filterChipsRow
+			if self.hasActiveFilter {
+				filterChipsRow
             }
         }
         .background(Color.rmBackground)
-        .animation(.easeInOut(duration: 0.2), value: showSearch)
-        .animation(.easeInOut(duration: 0.2), value: searchText.isEmpty)
-        .animation(.easeInOut(duration: 0.2), value: hasActiveFilter)
+		.animation(.easeInOut(duration: 0.2), value: self.showSearch)
+		.animation(.easeInOut(duration: 0.2), value: self.searchText.isEmpty)
+		.animation(.easeInOut(duration: 0.2), value: self.hasActiveFilter)
     }
 
     private var searchBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
-            TextField(resolvedPlaceholder, text: $searchText)
-                .focused($isSearchFocused)
+			TextField(self.resolvedPlaceholder, text: self.$searchText)
+				.focused(self.$isSearchFocused)
                 .autocorrectionDisabled()
-                .onSubmit { showSearch = false }
-            if !searchText.isEmpty {
-                Button { searchText = "" } label: {
+				.onSubmit { self.showSearch = false }
+			if !self.searchText.isEmpty {
+				Button { self.searchText = "" } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
                 }
@@ -62,28 +64,28 @@ struct SearchFilterHeader: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .transition(.move(edge: .top).combined(with: .opacity))
-        .onChange(of: isSearchFocused) { _, focused in
+		.onChange(of: self.isSearchFocused) { _, focused in
             if !focused {
-                withAnimation(.easeInOut(duration: 0.2)) { showSearch = false }
+				withAnimation(.easeInOut(duration: 0.2)) { self.showSearch = false }
             }
         }
     }
 
     private var filterMenu: some View {
         Menu {
-            Section(lang.localized(LocalizationKeys.Filter.sectionStatus)) {
-                Button { filterStatus = nil } label: {
-                    Label(lang.localized(LocalizationKeys.Filter.all), systemImage: filterStatus == nil ? "checkmark" : "")
+			Section(self.lang.localized(LocalizationKeys.Filter.sectionStatus)) {
+				Button { self.filterStatus = nil } label: {
+					Label(self.lang.localized(LocalizationKeys.Filter.all), systemImage: self.filterStatus == nil ? "checkmark" : "")
                 }
-                ForEach(availableStatuses, id: \.self) { status in
-                    Button { filterStatus = filterStatus == status ? nil : status } label: {
-                        Label(status, systemImage: filterStatus == status ? "checkmark" : "")
+				ForEach(self.availableStatuses, id: \.self) { status in
+					Button { self.filterStatus = self.filterStatus == status ? nil : status } label: {
+						Label(status, systemImage: self.filterStatus == status ? "checkmark" : "")
                     }
                 }
             }
-            Section(lang.localized(LocalizationKeys.Filter.sectionSpecies)) {
-                Button { filterSpecies = nil } label: {
-                    Label(lang.localized(LocalizationKeys.Filter.all), systemImage: filterSpecies == nil ? "checkmark" : "")
+			Section(self.lang.localized(LocalizationKeys.Filter.sectionSpecies)) {
+				Button { self.filterSpecies = nil } label: {
+					Label(self.lang.localized(LocalizationKeys.Filter.all), systemImage: self.filterSpecies == nil ? "checkmark" : "")
                 }
                 ForEach(availableSpecies, id: \.self) { species in
                     Button { filterSpecies = filterSpecies == species ? nil : species } label: {
@@ -92,10 +94,10 @@ struct SearchFilterHeader: View {
                 }
             }
         } label: {
-            Image(systemName: hasActiveFilter
+			Image(systemName: self.hasActiveFilter
                   ? "line.3.horizontal.decrease.circle.fill"
                   : "line.3.horizontal.decrease.circle")
-            .foregroundStyle(hasActiveFilter ? Color.accentColor : .secondary)
+			.foregroundStyle(self.hasActiveFilter ? Color.accentColor : .secondary)
         }
     }
 
@@ -103,10 +105,10 @@ struct SearchFilterHeader: View {
         HStack(spacing: 4) {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
                 .font(.caption)
-            Text(searchText)
+			Text(self.searchText)
                 .font(.caption)
                 .lineLimit(1)
-            Button { searchText = "" } label: {
+			Button { self.searchText = "" } label: {
                 Image(systemName: "xmark")
                     .font(.caption2)
                     .bold()
@@ -122,19 +124,19 @@ struct SearchFilterHeader: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .transition(.opacity.combined(with: .scale(scale: 0.9, anchor: .leading)))
         .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) { showSearch = true }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { isSearchFocused = true }
+			withAnimation(.easeInOut(duration: 0.2)) { self.showSearch = true }
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { self.isSearchFocused = true }
         }
     }
 
     private var filterChipsRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                if let status = filterStatus {
-                    FilterChipView(label: status) { filterStatus = nil }
+				if let status = self.filterStatus {
+					FilterChipView(label: status) { self.filterStatus = nil }
                 }
-                if let species = filterSpecies {
-                    FilterChipView(label: species) { filterSpecies = nil }
+				if let species = self.filterSpecies {
+					FilterChipView(label: species) { self.filterSpecies = nil }
                 }
             }
             .padding(.horizontal)

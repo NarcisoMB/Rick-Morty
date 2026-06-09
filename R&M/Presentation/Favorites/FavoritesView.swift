@@ -19,41 +19,41 @@ struct FavoritesView: View {
 
     @FocusState private var isSearchFocused: Bool
 
-    private var availableStatuses: [String] { Array(Set(favorites.favorites.map { $0.status })).sorted() }
-    private var availableSpecies:  [String] { Array(Set(favorites.favorites.map { $0.species })).sorted() }
+	private var availableStatuses: [String] { Array(Set(self.favorites.favorites.map { $0.status })).sorted() }
+	private var availableSpecies:  [String] { Array(Set(self.favorites.favorites.map { $0.species })).sorted() }
 
     private var filtered: [Character] {
-        var result = favorites.favorites
-        if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
-            let query = searchText.lowercased()
+		var result = self.favorites.favorites
+		if !self.searchText.trimmingCharacters(in: .whitespaces).isEmpty {
+			let query = self.searchText.lowercased()
             result = result.filter {
                 $0.name.lowercased().contains(query) ||
                 $0.status.lowercased().contains(query) ||
                 $0.species.lowercased().contains(query)
             }
         }
-        if let status = filterStatus   { result = result.filter { $0.status == status } }
-        if let species = filterSpecies { result = result.filter { $0.species == species } }
+		if let status = self.filterStatus   { result = result.filter { $0.status == status } }
+		if let species = self.filterSpecies { result = result.filter { $0.species == species } }
         return result
     }
 
     var body: some View {
         NavigationStack {
             Group {
-                if favorites.favorites.isEmpty {
+				if self.favorites.favorites.isEmpty {
                     ContentUnavailableView(
-                        lang.localized(LocalizationKeys.Favorites.emptyTitle),
+						self.lang.localized(LocalizationKeys.Favorites.emptyTitle),
                         systemImage: "heart.slash",
-                        description: Text(lang.localized(LocalizationKeys.Favorites.emptyDescription))
+						description: Text(self.lang.localized(LocalizationKeys.Favorites.emptyDescription))
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.rmBackground)
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 8) {
-                            ForEach(filtered) { character in
+							ForEach(self.filtered) { character in
                                 CharacterRow(character: character)
-                                    .onTapGesture { selectedCharacter = character }
+									.onTapGesture { self.selectedCharacter = character }
                                     .padding(.horizontal, 8)
                             }
                         }
@@ -62,32 +62,32 @@ struct FavoritesView: View {
                     .background(Color.rmBackground)
                 }
             }
-            .sheet(item: $selectedCharacter) { CharacterDetailView(character: $0) }
+			.sheet(item: self.$selectedCharacter) { CharacterDetailView(character: $0) }
             .safeAreaInset(edge: .top, spacing: 0) {
                 SearchFilterHeader(
-                    showSearch: $showSearch,
-                    searchText: $searchText,
-                    filterStatus: $filterStatus,
-                    filterSpecies: $filterSpecies,
-                    availableStatuses: availableStatuses,
-                    availableSpecies: availableSpecies,
-                    isSearchFocused: $isSearchFocused
+					showSearch: self.$showSearch,
+					searchText: self.$searchText,
+					filterStatus: self.$filterStatus,
+					filterSpecies: self.$filterSpecies,
+					availableStatuses: self.availableStatuses,
+					availableSpecies: self.availableSpecies,
+					isSearchFocused: self.$isSearchFocused
                 )
             }
             .colorScheme(.dark)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        lang.setLanguage(lang.language == "en" ? "es" : "en")
+						self.lang.setLanguage(lang.language == "en" ? "es" : "en")
                     } label: {
-                        Text(lang.language == "en" ? "ES" : "EN").bold()
+						Text(self.lang.language == "en" ? "ES" : "EN").bold()
                     }
                 }
                 ToolbarSpacer(.flexible)
                 ToolbarItem {
                     VStack(spacing: 2) {
                         Text("Rick & Morty").foregroundStyle(.white)
-                        Text(lang.localized(LocalizationKeys.Favorites.subtitle)).foregroundStyle(.white)
+						Text(self.lang.localized(LocalizationKeys.Favorites.subtitle)).foregroundStyle(.white)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
@@ -95,8 +95,8 @@ struct FavoritesView: View {
                 ToolbarSpacer(.flexible)
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        withAnimation(.easeInOut(duration: 0.2)) { showSearch.toggle() }
-                        if showSearch { isSearchFocused = true }
+						withAnimation(.easeInOut(duration: 0.2)) { self.showSearch.toggle() }
+						if self.showSearch { self.isSearchFocused = true }
                     } label: {
                         Image(systemName: "magnifyingglass")
                     }

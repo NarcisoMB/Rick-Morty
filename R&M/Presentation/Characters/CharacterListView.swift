@@ -20,12 +20,12 @@ struct CharacterListView: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 8) {
-                    ForEach(viewModel.filteredCharacters) { character in
+					ForEach(self.viewModel.filteredCharacters) { character in
                         CharacterRow(character: character)
-                            .onTapGesture { selectedCharacter = character }
+							.onTapGesture { self.selectedCharacter = character }
                             .onAppear {
-                                if character == viewModel.characters.last {
-                                    Task { await viewModel.loadNextPageIfNeeded(currentItem: character) }
+								if character == self.viewModel.characters.last {
+									Task { await self.viewModel.loadNextPageIfNeeded(currentItem: character) }
                                 }
                             }
                             .padding(.horizontal, 8)
@@ -35,49 +35,51 @@ struct CharacterListView: View {
                 .padding(.vertical, 4)
             }
             .background(Color.rmBackground)
-            .refreshable { await viewModel.refresh() }
-            .sheet(item: $selectedCharacter) { CharacterDetailView(character: $0) }
-            .overlay { loadingOverlay }
+			.refreshable { await self.viewModel.refresh() }
+			.sheet(item: self.$selectedCharacter) { CharacterDetailView(character: $0) }
+			.overlay { self.loadingOverlay }
             .safeAreaInset(edge: .top, spacing: 0) {
                 SearchFilterHeader(
-                    showSearch: $showSearch,
-                    searchText: $viewModel.searchText,
-                    filterStatus: $viewModel.filterStatus,
-                    filterSpecies: $viewModel.filterSpecies,
-                    availableStatuses: viewModel.availableStatuses,
-                    availableSpecies: viewModel.availableSpecies,
-                    isSearchFocused: $isSearchFocused
+					showSearch: self.$showSearch,
+					searchText: self.$viewModel.searchText,
+					filterStatus: self.$viewModel.filterStatus,
+					filterSpecies: self.$viewModel.filterSpecies,
+					availableStatuses: self.viewModel.availableStatuses,
+					availableSpecies: self.viewModel.availableSpecies,
+					isSearchFocused: self.$isSearchFocused
                 )
             }
             .colorScheme(.dark)
-            .task { await viewModel.loadCharacters() }
+			.task { await self.viewModel.loadCharacters() }
             .alert(
                 Text(lang.localized(LocalizationKeys.CharacterList.connectionError)),
                 isPresented: Binding(
-                    get: { viewModel.alertError != nil },
-                    set: { if !$0 { viewModel.alertError = nil } }
+					get: { self.viewModel.alertError != nil },
+					set: { if !$0 { self.viewModel.alertError = nil } }
                 ),
                 actions: {
-                    Button(lang.localized(LocalizationKeys.CharacterList.retry)) {
-                        Task { await viewModel.retryFromAlert() }
+					Button(self.lang.localized(LocalizationKeys.CharacterList.retry)) {
+						Task { await self.viewModel.retryFromAlert() }
                     }
-                    Button(lang.localized(LocalizationKeys.CharacterList.cancel), role: .cancel) {}
+					Button(self.lang.localized(LocalizationKeys.CharacterList.cancel), role: .cancel) {}
                 },
-                message: { Text(viewModel.alertError ?? "") }
+				message: { Text(self.viewModel.alertError ?? "") }
             )
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        lang.setLanguage(lang.language == "en" ? "es" : "en")
+						self.lang.setLanguage(self.lang.language == "en" ? "es" : "en")
                     } label: {
-                        Text(lang.language == "en" ? "ES" : "EN").bold()
+						Text(self.lang.language == "en" ? "ES" : "EN").bold()
                     }
                 }
                 ToolbarSpacer(.flexible)
                 ToolbarItem {
                     VStack {
-                        Text("Rick & Morty").foregroundStyle(.white)
-                        Text(lang.localized(LocalizationKeys.CharacterList.subtitle)).foregroundStyle(.white)
+                        Text("Rick & Morty")
+							.foregroundStyle(.white)
+						Text(self.lang.localized(LocalizationKeys.CharacterList.subtitle))
+							.foregroundStyle(.white)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
@@ -85,8 +87,8 @@ struct CharacterListView: View {
                 ToolbarSpacer(.flexible)
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        withAnimation(.easeInOut(duration: 0.2)) { showSearch.toggle() }
-                        if showSearch { isSearchFocused = true }
+						withAnimation(.easeInOut(duration: 0.2)) { self.showSearch.toggle() }
+						if self.showSearch { self.isSearchFocused = true }
                     } label: {
                         Image(systemName: "magnifyingglass")
                     }
@@ -97,7 +99,7 @@ struct CharacterListView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
         .overlay {
-            if viewModel.isRefreshing {
+			if self.viewModel.isRefreshing {
                 ZStack {
                     Color.black.opacity(0.75).ignoresSafeArea()
                     GIFImageView(name: "loadingPortal")
@@ -111,11 +113,11 @@ struct CharacterListView: View {
     @ViewBuilder
     private var footer: some View {
         VStack(spacing: 0) {
-            if viewModel.isLoadingMore {
+			if self.viewModel.isLoadingMore {
                 HStack(spacing: 8) {
                     ProgressView()
-                    if viewModel.retryAttempt > 0 {
-                        Text(LocalizationKeys.retrying(attempt: viewModel.retryAttempt, of: CharacterListViewModel.maxRetries, lang: lang))
+					if self.viewModel.retryAttempt > 0 {
+						Text(LocalizationKeys.retrying(attempt: self.viewModel.retryAttempt, of: CharacterListViewModel.maxRetries, lang: self.lang))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -123,10 +125,10 @@ struct CharacterListView: View {
                 .padding(.vertical, 16)
                 .frame(maxWidth: .infinity)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
-                .animation(.easeInOut(duration: 0.25), value: viewModel.isLoadingMore)
+				.animation(.easeInOut(duration: 0.25), value: self.viewModel.isLoadingMore)
             }
-            if viewModel.totalPages > 0 && viewModel.searchText.isEmpty {
-                Text(LocalizationKeys.pageIndicator(current: viewModel.currentPage, total: viewModel.totalPages, lang: lang))
+			if self.viewModel.totalPages > 0 && self.viewModel.searchText.isEmpty {
+				Text(LocalizationKeys.pageIndicator(current: self.viewModel.currentPage, total: self.viewModel.totalPages, lang: self.lang))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.vertical, 10)
@@ -137,12 +139,12 @@ struct CharacterListView: View {
 
     @ViewBuilder
     private var loadingOverlay: some View {
-        if viewModel.isLoading {
+		if self.viewModel.isLoading {
             ZStack {
                 Color.rmBackground
-                ProgressView(viewModel.retryAttempt > 0
-                             ? LocalizationKeys.retrying(attempt: viewModel.retryAttempt, of: CharacterListViewModel.maxRetries, lang: lang)
-                             : lang.localized(LocalizationKeys.CharacterList.loading))
+				ProgressView(self.viewModel.retryAttempt > 0
+							 ? LocalizationKeys.retrying(attempt: self.viewModel.retryAttempt, of: CharacterListViewModel.maxRetries, lang: self.lang)
+							 : self.lang.localized(LocalizationKeys.CharacterList.loading))
             }
             .ignoresSafeArea()
         }

@@ -18,14 +18,14 @@ struct ShimmerView: View {
                     .init(color: Color.gray.opacity(0.45), location: 0.3),
                     .init(color: Color.gray.opacity(0.25), location: 0.6)
                 ],
-                startPoint: .init(x: phase, y: 0.5),
-                endPoint: .init(x: phase + 1, y: 0.5)
+				startPoint: .init(x: self.phase, y: 0.5),
+				endPoint: .init(x: self.phase + 1, y: 0.5)
             )
             .frame(width: geo.size.width, height: geo.size.height)
         }
         .onAppear {
             withAnimation(.linear(duration: 1.2).repeatForever(autoreverses: false)) {
-                phase = 1
+				self.phase = 1
             }
         }
     }

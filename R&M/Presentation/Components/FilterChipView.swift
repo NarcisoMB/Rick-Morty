@@ -13,9 +13,9 @@ struct FilterChipView: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Text(label)
+			Text(self.label)
                 .font(.caption)
-            Button(action: onRemove) {
+			Button(action: self.onRemove) {
                 Image(systemName: "xmark")
                     .font(.caption2)
                     .bold()

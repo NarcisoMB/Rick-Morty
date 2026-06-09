@@ -15,7 +15,7 @@ struct GIFImageView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage.gifImage(named: name)
+		imageView.image = UIImage.gifImage(named: self.name)
         return imageView
     }
 
