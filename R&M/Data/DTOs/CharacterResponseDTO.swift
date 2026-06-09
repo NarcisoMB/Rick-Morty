@@ -17,12 +17,21 @@ struct InfoDTO: Decodable {
     let pages: Int
 }
 
+struct LocationDTO: Decodable {
+    let name: String
+}
+
 struct CharacterDTO: Decodable {
     let id: Int
     let name: String
     let status: String
     let species: String
+    let type: String
+    let gender: String
+    let origin: LocationDTO
+    let location: LocationDTO
     let image: String
+    let episode: [String]
 
     func toDomain() -> Character {
         Character(
@@ -30,7 +39,12 @@ struct CharacterDTO: Decodable {
             name: name,
             status: status,
             species: species,
-            image: URL(string: image)
+            type: type,
+            gender: gender,
+            originName: origin.name,
+            locationName: location.name,
+            image: URL(string: image),
+            episodeCount: episode.count
         )
     }
 }
