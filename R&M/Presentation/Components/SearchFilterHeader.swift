@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct SearchFilterHeader: View {
+    @Environment(LanguageManager.self) private var lang
+
     @Binding var showSearch: Bool
     @Binding var searchText: String
     @Binding var filterStatus: String?
     @Binding var filterSpecies: String?
     var availableStatuses: [String]
     var availableSpecies: [String]
-    var placeholder: String = "Name, species, status..."
+    var placeholder: String = ""
     @FocusState.Binding var isSearchFocused: Bool
 
     private var hasActiveFilter: Bool { filterStatus != nil || filterSpecies != nil }
+    private var resolvedPlaceholder: String { placeholder.isEmpty ? lang.localized(LocalizationKeys.CharacterList.searchPlaceholder) : placeholder }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -41,7 +44,7 @@ struct SearchFilterHeader: View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
-            TextField(placeholder, text: $searchText)
+            TextField(resolvedPlaceholder, text: $searchText)
                 .focused($isSearchFocused)
                 .autocorrectionDisabled()
                 .onSubmit { showSearch = false }
@@ -68,9 +71,9 @@ struct SearchFilterHeader: View {
 
     private var filterMenu: some View {
         Menu {
-            Section("Status") {
+            Section(lang.localized(LocalizationKeys.Filter.sectionStatus)) {
                 Button { filterStatus = nil } label: {
-                    Label("All", systemImage: filterStatus == nil ? "checkmark" : "")
+                    Label(lang.localized(LocalizationKeys.Filter.all), systemImage: filterStatus == nil ? "checkmark" : "")
                 }
                 ForEach(availableStatuses, id: \.self) { status in
                     Button { filterStatus = filterStatus == status ? nil : status } label: {
@@ -78,9 +81,9 @@ struct SearchFilterHeader: View {
                     }
                 }
             }
-            Section("Species") {
+            Section(lang.localized(LocalizationKeys.Filter.sectionSpecies)) {
                 Button { filterSpecies = nil } label: {
-                    Label("All", systemImage: filterSpecies == nil ? "checkmark" : "")
+                    Label(lang.localized(LocalizationKeys.Filter.all), systemImage: filterSpecies == nil ? "checkmark" : "")
                 }
                 ForEach(availableSpecies, id: \.self) { species in
                     Button { filterSpecies = filterSpecies == species ? nil : species } label: {

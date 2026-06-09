@@ -8,15 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(LanguageManager.self) private var lang
+
     var body: some View {
         TabView {
             CharacterListView()
                 .tabItem {
-                    Label("Characters", systemImage: "person.3")
+                    Label(lang.localized(LocalizationKeys.Tab.characters), systemImage: "person.3")
                 }
             FavoritesView()
                 .tabItem {
-                    Label("Favorites", systemImage: "heart")
+                    Label(lang.localized(LocalizationKeys.Tab.favorites), systemImage: "heart")
                 }
         }
     }

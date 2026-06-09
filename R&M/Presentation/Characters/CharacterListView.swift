@@ -46,7 +46,6 @@ struct CharacterListView: View {
                     filterSpecies: $viewModel.filterSpecies,
                     availableStatuses: viewModel.availableStatuses,
                     availableSpecies: viewModel.availableSpecies,
-                    placeholder: lang.localized(LocalizationKeys.CharacterList.searchPlaceholder),
                     isSearchFocused: $isSearchFocused
                 )
             }

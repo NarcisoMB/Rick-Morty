@@ -10,6 +10,7 @@ import SwiftUI
 struct CharacterDetailView: View {
     let character: Character
 
+    @Environment(LanguageManager.self) private var lang
     @Environment(FavoritesManager.self) private var favorites
     @State private var contentHeight: CGFloat = 500
 
@@ -50,14 +51,14 @@ struct CharacterDetailView: View {
             }
 
             VStack(spacing: 1) {
-                infoRow(label: "Species",  value: character.species)
+                infoRow(label: lang.localized(LocalizationKeys.Detail.labelSpecies),  value: character.species)
                 if !character.type.isEmpty {
-                    infoRow(label: "Type",     value: character.type)
+                    infoRow(label: lang.localized(LocalizationKeys.Detail.labelType), value: character.type)
                 }
-                infoRow(label: "Gender",   value: character.gender)
-                infoRow(label: "Origin",   value: character.originName)
-                infoRow(label: "Location", value: character.locationName)
-                infoRow(label: "Episodes", value: "\(character.episodeCount)")
+                infoRow(label: lang.localized(LocalizationKeys.Detail.labelGender),   value: character.gender)
+                infoRow(label: lang.localized(LocalizationKeys.Detail.labelOrigin),   value: character.originName)
+                infoRow(label: lang.localized(LocalizationKeys.Detail.labelLocation), value: character.locationName)
+                infoRow(label: lang.localized(LocalizationKeys.Detail.labelEpisodes), value: "\(character.episodeCount)")
             }
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 16)

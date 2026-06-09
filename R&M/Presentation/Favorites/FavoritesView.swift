@@ -42,9 +42,9 @@ struct FavoritesView: View {
             Group {
                 if favorites.favorites.isEmpty {
                     ContentUnavailableView(
-                        "No favorites yet",
+                        lang.localized(LocalizationKeys.Favorites.emptyTitle),
                         systemImage: "heart.slash",
-                        description: Text("Tap the heart on any character to save it here.")
+                        description: Text(lang.localized(LocalizationKeys.Favorites.emptyDescription))
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.rmBackground)
@@ -87,7 +87,7 @@ struct FavoritesView: View {
                 ToolbarItem {
                     VStack(spacing: 2) {
                         Text("Rick & Morty").foregroundStyle(.white)
-                        Text("Favorites").foregroundStyle(.white)
+                        Text(lang.localized(LocalizationKeys.Favorites.subtitle)).foregroundStyle(.white)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
