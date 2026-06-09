@@ -1,0 +1,198 @@
+//
+// SettingsView.swift
+// R&M
+//
+// Created by Narciso Meza on 09/06/26.
+//
+
+import SwiftUI
+import LocalAuthentication
+
+struct SettingsView: View {
+	@Environment(LanguageManager.self) private var lang
+	
+	@State private var viewModel = SettingsViewModel()
+	
+	var body: some View {
+		NavigationStack {
+			ScrollView {
+				LazyVStack(spacing: 16) {
+					languageSection
+					securitySection
+				}
+				.padding(.horizontal, 8)
+				.padding(.vertical, 4)
+			}
+			.background(Color.rmBackground)
+			.colorScheme(.dark)
+			.task { self.viewModel.checkBiometricStatus() }
+			.toolbar {
+				ToolbarItem {
+					VStack(spacing: 2) {
+						Text("Rick & Morty").foregroundStyle(.white)
+						Text("Settings").foregroundStyle(.white)
+					}
+					.frame(maxWidth: .infinity)
+					.padding(.vertical, 4)
+				}
+			}
+			.toolbarBackground(Color.rmBackground, for: .navigationBar)
+			.toolbarBackground(.visible, for: .navigationBar)
+			.toolbarColorScheme(.dark, for: .navigationBar)
+		}
+	}
+	
+	// MARK: - Language section
+	
+	private var languageSection: some View {
+		VStack(alignment: .leading, spacing: 0) {
+			Text("Language")
+				.font(.caption)
+				.foregroundStyle(.secondary)
+				.padding(.horizontal, 12)
+				.padding(.bottom, 6)
+			
+			HStack(spacing: 12) {
+				Image(systemName: "globe")
+					.font(.title2)
+					.foregroundStyle(Color.accentColor)
+					.frame(width: 32)
+				
+				VStack(alignment: .leading, spacing: 2) {
+					Text(self.lang.language == "en" ? "English" : "Español")
+						.font(.headline)
+					Text("Tap to switch language")
+						.font(.caption)
+						.foregroundStyle(.secondary)
+				}
+				
+				Spacer()
+				
+				Toggle("", isOn: Binding(
+					get: { self.lang.language == "es" },
+					set: { _ in self.lang.setLanguage(lang.language == "en" ? "es" : "en") }
+				))
+				.labelsHidden()
+				.tint(Color.accentColor)
+			}
+			.padding(.horizontal, 12)
+			.padding(.vertical, 14)
+			.background(Color.rmCard)
+			.clipShape(RoundedRectangle(cornerRadius: 12))
+		}
+	}
+	
+	// MARK: - Security section
+	
+	private var securitySection: some View {
+		VStack(alignment: .leading, spacing: 0) {
+			Text("Security")
+				.font(.caption)
+				.foregroundStyle(.secondary)
+				.padding(.horizontal, 12)
+				.padding(.bottom, 6)
+			
+			biometricRow
+		}
+	}
+	
+	// MARK: - Biometric row
+	
+	private var biometricRow: some View {
+		VStack(spacing: 0) {
+			HStack(spacing: 12) {
+				Image(systemName: self.biometricIcon)
+					.font(.title2)
+					.foregroundStyle(self.statusColor)
+					.frame(width: 32)
+				
+				VStack(alignment: .leading, spacing: 2) {
+					Text(self.biometricTitle)
+						.font(.headline)
+					Text(self.statusDescription)
+						.font(.caption)
+						.foregroundStyle(.secondary)
+				}
+				
+				Spacer()
+				
+				Toggle("", isOn: Binding(
+					get: { self.viewModel.isFaceIDEnabled },
+					set: { enabled in
+						if enabled {
+							Task { await self.viewModel.enableFaceID() }
+						} else {
+							self.viewModel.disableFaceID()
+						}
+					}
+				))
+				.labelsHidden()
+				.tint(.green)
+				.disabled(self.viewModel.biometricStatus == .notAvailable || self.viewModel.isAuthenticating)
+			}
+			.padding(.horizontal, 12)
+			.padding(.vertical, 14)
+			
+			if self.viewModel.biometricStatus == .denied {
+				Divider().background(.secondary.opacity(0.3))
+				
+				Button {
+					UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+				} label: {
+					Label("Open Settings to enable \(self.biometricTitle)", systemImage: "gear")
+						.font(.subheadline)
+						.frame(maxWidth: .infinity)
+				}
+				.padding(.horizontal, 12)
+				.padding(.vertical, 12)
+				.tint(Color.accentColor)
+			}
+		}
+		.background(Color.rmCard)
+		.clipShape(RoundedRectangle(cornerRadius: 12))
+	}
+	
+	// MARK: - Computed helpers
+	private var biometricIcon: String {
+		switch self.viewModel.biometryType {
+		case .faceID: return "faceid"
+		case .touchID: return "touchid"
+		case .opticID: return "opticid"
+		default: return "lock.slash"
+		}
+	}
+	
+	private var biometricTitle: String {
+		switch self.viewModel.biometryType {
+		case .faceID: return "Face ID"
+		case .touchID: return "Touch ID"
+		case .opticID: return "Optic ID"
+		default: return "Biometrics"
+		}
+	}
+	
+	private var statusDescription: String {
+		switch self.viewModel.biometricStatus {
+		case .authorized: return "App can use \(biometricTitle)"
+		case .denied: return "Permission denied — enable in Settings"
+		case .notEnrolled: return "No biometrics enrolled on this device"
+		case .notAvailable: return "This device does not support biometrics"
+		case .locked: return "Too many failed attempts — try again later"
+		}
+	}
+	
+	private var statusColor: Color {
+		switch self.viewModel.biometricStatus {
+		case .authorized: return .green
+		case .denied: return .red
+		case .notEnrolled: return .yellow
+		case .notAvailable: return .gray
+		case .locked: return .orange
+		}
+	}
+}
+
+#Preview {
+	SettingsView()
+		.environment(LanguageManager.shared)
+}
