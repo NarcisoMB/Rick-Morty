@@ -37,7 +37,7 @@ struct CharacterListView: View {
                         }
                     }
                     .padding(10)
-                    .background(Color.RM.peach.opacity(0.25))
+                    .background(Color(.systemGray6))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding(.horizontal)
                     .padding(.vertical, 8)
@@ -58,7 +58,6 @@ struct CharacterListView: View {
 								 ? LocalizationKeys.retrying(attempt: self.viewModel.retryAttempt, of: CharacterListViewModel.maxRetries, lang: self.lang)
 								 : self.lang.localized(LocalizationKeys.CharacterList.loading)
                     )
-                    .tint(Color.RM.green)
                     Spacer()
                 } else {
 					// Chip de filtro activo — visible cuando hay texto pero barra oculta
@@ -79,8 +78,8 @@ struct CharacterListView: View {
 						}
 						.padding(.horizontal, 10)
 						.padding(.vertical, 6)
-						.background(Color.RM.yellow)
-						.foregroundStyle(Color.RM.brown)
+						.background(Color.accentColor.opacity(0.15))
+						.foregroundStyle(Color.accentColor)
 						.clipShape(Capsule())
 						.padding(.horizontal)
 						.padding(.vertical, 8)
@@ -111,11 +110,10 @@ struct CharacterListView: View {
 							if self.viewModel.isLoadingMore {
 								HStack(spacing: 8) {
 									ProgressView()
-										.tint(Color.RM.green)
 									if self.viewModel.retryAttempt > 0 {
 										Text(LocalizationKeys.retrying(attempt: self.viewModel.retryAttempt, of: CharacterListViewModel.maxRetries, lang: self.lang))
 											.font(.caption)
-											.foregroundStyle(Color.RM.peach)
+											.foregroundStyle(.secondary)
 									}
 								}
 								.padding(.vertical, 10)
@@ -127,7 +125,7 @@ struct CharacterListView: View {
 							if self.viewModel.totalPages > 0 && self.viewModel.searchText.isEmpty {
 								Text(LocalizationKeys.pageIndicator(current: self.viewModel.currentPage, total: self.viewModel.totalPages, lang: self.lang))
 									.font(.caption)
-									.foregroundStyle(Color.RM.peach)
+									.foregroundStyle(.secondary)
 									.padding(.vertical, 10)
 									.frame(maxWidth: .infinity)
 							}
@@ -173,7 +171,7 @@ struct CharacterListView: View {
 		.overlay {
 			if self.viewModel.isRefreshing {
 				ZStack {
-					Color.RM.brown.opacity(0.85)
+					Color.black.opacity(0.75)
 						.ignoresSafeArea()
 					GIFImageView(name: "loadingPortal")
 						.frame(width: 160, height: 160)
@@ -213,8 +211,8 @@ private struct CharacterRow: View {
 
     private var statusColor: Color {
         switch character.status.lowercased() {
-        case "alive": .RM.green
-        case "dead":  .RM.pink
+        case "alive": .green
+        case "dead":  .red
         default:      .gray
         }
     }
