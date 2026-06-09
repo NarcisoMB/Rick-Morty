@@ -13,6 +13,7 @@ struct R_MApp: App {
         WindowGroup {
             ContentView()
                 .environment(LanguageManager.shared)
+                .environment(FavoritesManager.shared)
         }
     }
 }
