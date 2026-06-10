@@ -12,6 +12,7 @@ struct CharacterRow: View {
     @Environment(LanguageManager.self) private var lang
     @Environment(FavoritesManager.self) private var favorites
     @Environment(BiometricAuthManager.self) private var biometricAuth
+    @Environment(ToastManager.self) private var toast
 
     @State private var showLockedAlert = false
 
@@ -43,6 +44,8 @@ struct CharacterRow: View {
 					Task { await self.removeWithAuth() }
                 } else {
 					self.favorites.toggle(self.character)
+					let msg = self.lang.localized(LocalizationKeys.Toast.addedFavoriteFormat, self.character.name)
+					Task { await MainActor.run { self.toast.show(msg) } }
                 }
             } label: {
 				Image(systemName: self.favorites.isFavorite(self.character) ? "heart.fill" : "heart")
@@ -63,12 +66,14 @@ struct CharacterRow: View {
     }
 
     private func removeWithAuth() async {
-		let reason = self.lang.localized(LocalizationKeys.Biometric.removeReason)
-		let authorized = await self.biometricAuth.authorizeRemoval(reason: reason)
+        let reason = self.lang.localized(LocalizationKeys.Biometric.removeReason)
+        let authorized = await self.biometricAuth.authorizeRemoval(reason: reason)
         if authorized {
-			self.favorites.toggle(character)
-		} else if self.biometricAuth.isLocked {
-			self.showLockedAlert = true
+            self.favorites.toggle(character)
+            let msg = self.lang.localized(LocalizationKeys.Toast.removedFavoriteFormat, self.character.name)
+            await MainActor.run { self.toast.show(msg) }
+        } else if self.biometricAuth.isLocked {
+            self.showLockedAlert = true
         }
     }
 }
