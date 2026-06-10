@@ -24,13 +24,13 @@ final class CharacterListViewModel {
     
 	var alertError: String?
     var searchText = ""
-    var filterStatus: String? = nil
-    var filterSpecies: String? = nil
+    var filterStatus: String?
+    var filterSpecies: String?
 
     var hasActiveFilter: Bool { filterStatus != nil || filterSpecies != nil }
 
     var availableStatuses: [String] { Array(Set(characters.map { $0.status })).sorted() }
-    var availableSpecies:  [String] { Array(Set(characters.map { $0.species })).sorted() }
+    var availableSpecies: [String] { Array(Set(characters.map { $0.species })).sorted() }
 
     var filteredCharacters: [Character] {
 		var result = self.characters
@@ -52,12 +52,17 @@ final class CharacterListViewModel {
     }
 
     private let useCase: GetCharactersUseCase
+    private let store: CharacterStore
     private var hasNextPage = true
     private var failedPage: Int?
     private var pendingRetryIsInitial = false
 
-    init(useCase: GetCharactersUseCase = GetCharactersUseCase(repository: CharacterRepository())) {
+    init(
+        useCase: GetCharactersUseCase = GetCharactersUseCase(repository: CharacterRepository()),
+        store: CharacterStore = .shared
+    ) {
         self.useCase = useCase
+        self.store = store
     }
 
     func loadCharacters() async {
@@ -75,7 +80,7 @@ final class CharacterListViewModel {
 			strongSelf.characters = page.characters
 			strongSelf.hasNextPage = page.hasNextPage
 			strongSelf.totalPages = page.totalPages
-			CharacterStore.shared.add(page.characters)
+			strongSelf.store.add(page.characters)
 			
 		} onFailure: { [weak self] error in
 			guard let strongSelf = self else { return }
@@ -123,7 +128,7 @@ final class CharacterListViewModel {
 
         if !refreshed.isEmpty {
             self.characters = refreshed
-            CharacterStore.shared.replace(refreshed)
+            store.replace(refreshed)
         }
 		self.isRefreshing = false
     }
@@ -153,7 +158,7 @@ final class CharacterListViewModel {
 			strongSelf.hasNextPage = result.hasNextPage
 			strongSelf.totalPages = result.totalPages
 			strongSelf.currentPage = page
-			CharacterStore.shared.add(result.characters)
+			strongSelf.store.add(result.characters)
         } onFailure: { [weak self] error in
 			guard let strongSelf = self else { return }
 			

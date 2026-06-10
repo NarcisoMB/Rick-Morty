@@ -12,7 +12,7 @@ final class PersistenceController {
 	
 	let container: NSPersistentContainer
 	
-	private init(inMemory: Bool = false) {
+	init(inMemory: Bool = false) {
 		self.container = NSPersistentContainer(name: "RickAndMorty", managedObjectModel: Self.model)
 		if inMemory {
 			self.container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
@@ -37,11 +37,11 @@ final class PersistenceController {
 		entity.managedObjectClassName = NSStringFromClass(CharacterEntity.self)
 		
 		func attr(_ name: String, _ type: NSAttributeType) -> NSAttributeDescription {
-			let a = NSAttributeDescription()
-			a.name = name
-			a.attributeType = type
-			a.isOptional = true
-			return a
+			let desc = NSAttributeDescription()
+			desc.name = name
+			desc.attributeType = type
+			desc.isOptional = true
+			return desc
 		}
 		
 		entity.properties = [
@@ -55,7 +55,7 @@ final class PersistenceController {
 			attr("locationName", .stringAttributeType),
 			attr("imageURL", .stringAttributeType),
 			attr("episodesRaw", .stringAttributeType),
-			attr("page", .integer32AttributeType),
+			attr("page", .integer32AttributeType)
 		]
 		
 		let model = NSManagedObjectModel()

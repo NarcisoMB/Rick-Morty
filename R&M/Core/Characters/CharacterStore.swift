@@ -9,7 +9,6 @@ import Observation
 
 @Observable final class CharacterStore {
     static let shared = CharacterStore()
-    private init() {}
 
     private(set) var characters: [Character] = []
 
@@ -22,5 +21,9 @@ import Observation
 
     func replace(_ characters: [Character]) {
         self.characters = characters
+    }
+
+    func reset() {
+        characters = []
     }
 }
