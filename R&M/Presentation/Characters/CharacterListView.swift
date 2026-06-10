@@ -80,9 +80,10 @@ struct CharacterListView: View {
 							.foregroundStyle(.white)
 						Text(self.lang.localized(LocalizationKeys.CharacterList.subtitle))
 							.foregroundStyle(.white)
+							.font(.caption)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 4)
+					.padding(.vertical, 8)
                 }
                 ToolbarSpacer(.flexible)
                 ToolbarItem(placement: .topBarTrailing) {

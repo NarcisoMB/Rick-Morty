@@ -61,7 +61,7 @@ final class CharacterListViewModel {
     }
 
     func loadCharacters() async {
-        guard !self.isLoading else { return }
+        guard !self.isLoading, self.characters.isEmpty else { return }
         self.isLoading = true
         self.alertError = nil
         self.currentPage = 1
@@ -75,6 +75,7 @@ final class CharacterListViewModel {
 			strongSelf.characters = page.characters
 			strongSelf.hasNextPage = page.hasNextPage
 			strongSelf.totalPages = page.totalPages
+			CharacterStore.shared.add(page.characters)
 			
 		} onFailure: { [weak self] error in
 			guard let strongSelf = self else { return }
@@ -108,7 +109,7 @@ final class CharacterListViewModel {
 
         for page in 1...pagesToRefresh {
             do {
-				let result = try await self.useCase.execute(page: page)
+				let result = try await self.useCase.execute(page: page, forceRefresh: true)
                 refreshed += result.characters
                 if page == pagesToRefresh {
 					self.hasNextPage = result.hasNextPage
@@ -121,7 +122,8 @@ final class CharacterListViewModel {
         }
 
         if !refreshed.isEmpty {
-			self.characters = refreshed
+            self.characters = refreshed
+            CharacterStore.shared.replace(refreshed)
         }
 		self.isRefreshing = false
     }
@@ -151,6 +153,7 @@ final class CharacterListViewModel {
 			strongSelf.hasNextPage = result.hasNextPage
 			strongSelf.totalPages = result.totalPages
 			strongSelf.currentPage = page
+			CharacterStore.shared.add(result.characters)
         } onFailure: { [weak self] error in
 			guard let strongSelf = self else { return }
 			
