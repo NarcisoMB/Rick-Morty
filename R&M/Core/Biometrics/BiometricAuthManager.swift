@@ -23,10 +23,7 @@ final class BiometricAuthManager {
         UserDefaults.standard.bool(forKey: "rm_faceIDEnabled")
     }
 
-    /// Returns true if the action is authorized.
-    /// Skips auth when Face ID is disabled in app settings or biometrics unavailable.
     func authorizeRemoval(reason: String) async -> Bool {
-		guard self.isFaceIDEnabled else { return true }
 		guard !self.isLocked else { return false }
 
         let context = LAContext()
@@ -52,7 +49,21 @@ final class BiometricAuthManager {
     }
 
     func resetLock() {
-		self.failureCount = 0
-		self.isLocked = false
+        self.failureCount = 0
+        self.isLocked = false
+    }
+
+    func authenticate(reason: String) async -> Bool {
+        let context = LAContext()
+        var error: NSError?
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
+            return true
+        }
+        do {
+            try await context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason)
+            return true
+        } catch {
+            return false
+        }
     }
 }

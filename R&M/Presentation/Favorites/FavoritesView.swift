@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct FavoritesView: View {
+    let isTabSelected: Bool
+
     @Environment(LanguageManager.self) private var lang
     @Environment(FavoritesManager.self) private var favorites
+    @Environment(BiometricAuthManager.self) private var biometricAuth
 
+    @State private var isUnlocked = false
+    @State private var authTask: Task<Void, Never>?
     @State private var showSearch = false
     @State private var searchText = ""
     @State private var filterStatus: String? = nil
@@ -38,6 +43,50 @@ struct FavoritesView: View {
     }
 
     var body: some View {
+        Group {
+            if !self.isUnlocked {
+                lockScreen
+            } else {
+                mainContent
+            }
+        }
+        .onChange(of: isTabSelected, initial: true) { _, selected in
+            if selected {
+                authTask?.cancel()
+                authTask = Task { await attemptUnlock() }
+            } else {
+                authTask?.cancel()
+                authTask = nil
+                isUnlocked = false
+            }
+        }
+    }
+
+    private var lockScreen: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "lock.fill")
+                .font(.system(size: 56))
+                .foregroundStyle(.secondary)
+            Text(lang.localized(LocalizationKeys.Favorites.lockedTitle))
+                .font(.title2).bold()
+            Button {
+				Task { await self.attemptUnlock() }
+            } label: {
+                Label(lang.localized(LocalizationKeys.Favorites.unlockButton), systemImage: "faceid")
+                    .font(.headline)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 14)
+                    .background(Color.accentColor)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.rmBackground)
+        .colorScheme(.dark)
+    }
+
+    private var mainContent: some View {
         NavigationStack {
             Group {
 				if self.favorites.favorites.isEmpty {
@@ -86,11 +135,14 @@ struct FavoritesView: View {
                 ToolbarSpacer(.flexible)
                 ToolbarItem {
                     VStack(spacing: 2) {
-                        Text("Rick & Morty").foregroundStyle(.white)
-						Text(self.lang.localized(LocalizationKeys.Favorites.subtitle)).foregroundStyle(.white)
+                        Text("Rick & Morty")
+							.foregroundStyle(.white)
+						Text(self.lang.localized(LocalizationKeys.Favorites.subtitle))
+							.foregroundStyle(.white)
+							.font(.caption)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 4)
+					.padding(.vertical, 8)
                 }
                 ToolbarSpacer(.flexible)
                 ToolbarItem(placement: .topBarTrailing) {
@@ -106,5 +158,12 @@ struct FavoritesView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
+    }
+
+    private func attemptUnlock() async {
+        let reason = lang.localized(LocalizationKeys.Favorites.authReason)
+        let result = await biometricAuth.authenticate(reason: reason)
+        guard !Task.isCancelled else { return }
+        isUnlocked = result
     }
 }
