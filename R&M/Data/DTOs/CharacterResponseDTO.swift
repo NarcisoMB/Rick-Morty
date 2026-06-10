@@ -34,7 +34,11 @@ struct CharacterDTO: Decodable {
     let episode: [String]
 
     func toDomain() -> Character {
-        Character(
+        let episodeNumbers = episode.compactMap { url -> Int? in
+            guard let last = url.split(separator: "/").last else { return nil }
+            return Int(last)
+        }
+        return Character(
             id: id,
             name: name,
             status: status,
@@ -44,7 +48,7 @@ struct CharacterDTO: Decodable {
             originName: origin.name,
             locationName: location.name,
             image: URL(string: image),
-            episodeCount: episode.count
+            episodes: episodeNumbers
         )
     }
 }

@@ -17,5 +17,7 @@ struct Character: Identifiable, Equatable, Codable {
     let originName: String
     let locationName: String
     let image: URL?
-    let episodeCount: Int
+    let episodes: [Int]
+
+    var episodeCount: Int { episodes.count }
 }

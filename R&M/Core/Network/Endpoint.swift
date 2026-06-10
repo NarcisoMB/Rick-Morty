@@ -25,4 +25,9 @@ extension Endpoint {
     static func characters(page: Int = 1) -> Endpoint {
         Endpoint(path: "/character", queryItems: [URLQueryItem(name: "page", value: "\(page)")])
     }
+
+    static func episodes(ids: [Int]) -> Endpoint {
+        let joined = ids.map(String.init).joined(separator: ",")
+        return Endpoint(path: "/episode/\(joined)", queryItems: [])
+    }
 }
