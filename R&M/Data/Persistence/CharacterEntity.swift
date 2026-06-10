@@ -18,11 +18,14 @@ final class CharacterEntity: NSManagedObject {
     @NSManaged var originName: String?
     @NSManaged var locationName: String?
     @NSManaged var imageURL: String?
-    @NSManaged var episodeCount: Int32
+    @NSManaged var episodesRaw: String?
     @NSManaged var page: Int32
 
     func toDomain() -> Character {
-        Character(
+        let episodes = episodesRaw?
+            .split(separator: ",")
+            .compactMap { Int($0) } ?? []
+        return Character(
             id: Int(id),
             name: name ?? "",
             status: status ?? "",
@@ -32,7 +35,7 @@ final class CharacterEntity: NSManagedObject {
             originName: originName ?? "",
             locationName: locationName ?? "",
             image: imageURL.flatMap(URL.init),
-            episodeCount: Int(episodeCount)
+            episodes: episodes
         )
     }
 }

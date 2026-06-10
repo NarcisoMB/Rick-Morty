@@ -17,18 +17,24 @@ final class CharacterRepository: CharacterRepositoryProtocol {
         self.local = local
     }
 
-    func getCharacters(page: Int) async throws -> CharacterPage {
+    func getCharacters(page: Int, forceRefresh: Bool = false) async throws -> CharacterPage {
+        if !forceRefresh {
+            let cached = self.local.fetchCharacters(page: page)
+            if !cached.isEmpty {
+                return CharacterPage(characters: cached, hasNextPage: true, totalPages: 0)
+            }
+        }
         do {
-			let response: CharacterResponseDTO = try await self.client.get(.characters(page: page))
+            let response: CharacterResponseDTO = try await self.client.get(.characters(page: page))
             let characters = response.results.map { $0.toDomain() }
-			self.local.save(characters: characters, page: page)
+            self.local.save(characters: characters, page: page)
             return CharacterPage(
                 characters: characters,
                 hasNextPage: response.info.next != nil,
                 totalPages: response.info.pages
             )
         } catch {
-            let cached = local.fetchCharacters(page: page)
+            let cached = self.local.fetchCharacters(page: page)
             guard !cached.isEmpty else { throw error }
             return CharacterPage(characters: cached, hasNextPage: true, totalPages: 0)
         }

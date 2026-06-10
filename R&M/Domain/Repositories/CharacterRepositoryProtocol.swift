@@ -6,5 +6,5 @@
 //
 
 protocol CharacterRepositoryProtocol {
-    func getCharacters(page: Int) async throws -> CharacterPage
+    func getCharacters(page: Int, forceRefresh: Bool) async throws -> CharacterPage
 }

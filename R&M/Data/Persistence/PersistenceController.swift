@@ -17,8 +17,14 @@ final class PersistenceController {
 		if inMemory {
 			self.container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
 		}
-		self.container.loadPersistentStores { _, error in
-			if let error { fatalError("CoreData store failed: \(error)") }
+		self.container.loadPersistentStores { [weak container] desc, error in
+			guard error != nil else { return }
+			if let url = desc.url {
+				try? FileManager.default.removeItem(at: url)
+			}
+			container?.loadPersistentStores { _, error in
+				if let error { fatalError("CoreData store failed after reset: \(error)") }
+			}
 		}
 		self.container.viewContext.automaticallyMergesChangesFromParent = true
 	}
@@ -39,17 +45,17 @@ final class PersistenceController {
 		}
 		
 		entity.properties = [
-			attr("id",           .integer32AttributeType),
-			attr("name",         .stringAttributeType),
-			attr("status",       .stringAttributeType),
-			attr("species",      .stringAttributeType),
-			attr("type",         .stringAttributeType),
-			attr("gender",       .stringAttributeType),
-			attr("originName",   .stringAttributeType),
+			attr("id", .integer32AttributeType),
+			attr("name", .stringAttributeType),
+			attr("status", .stringAttributeType),
+			attr("species", .stringAttributeType),
+			attr("type", .stringAttributeType),
+			attr("gender", .stringAttributeType),
+			attr("originName", .stringAttributeType),
 			attr("locationName", .stringAttributeType),
-			attr("imageURL",     .stringAttributeType),
-			attr("episodeCount", .integer32AttributeType),
-			attr("page",         .integer32AttributeType),
+			attr("imageURL", .stringAttributeType),
+			attr("episodesRaw", .stringAttributeType),
+			attr("page", .integer32AttributeType),
 		]
 		
 		let model = NSManagedObjectModel()

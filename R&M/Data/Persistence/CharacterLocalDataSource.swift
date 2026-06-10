@@ -41,7 +41,7 @@ struct CharacterLocalDataSource {
                 entity.originName   = character.originName
                 entity.locationName = character.locationName
                 entity.imageURL     = character.image?.absoluteString
-                entity.episodeCount = Int32(character.episodeCount)
+                entity.episodesRaw   = character.episodes.map(String.init).joined(separator: ",")
                 entity.page         = Int32(page)
             }
 
