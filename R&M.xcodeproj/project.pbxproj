@@ -256,6 +256,7 @@
 				DEVELOPMENT_TEAM = 7W75CMJVF3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "R-M-Info.plist";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "This app requires Face ID so that you can make changes to your profile securely.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -289,6 +290,7 @@
 				DEVELOPMENT_TEAM = 7W75CMJVF3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "R-M-Info.plist";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "This app requires Face ID so that you can make changes to your profile securely.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

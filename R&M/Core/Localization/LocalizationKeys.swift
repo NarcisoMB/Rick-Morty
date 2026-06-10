@@ -23,7 +23,16 @@ enum LocalizationKeys {
 	enum Tab {
 		static let characters = "tab_characters"
 		static let favorites  = "tab_favorites"
+		static let map        = "tab_map"
 		static let settings   = "tab_settings"
+	}
+
+	enum Splash {
+		static let subtitle = "splash_subtitle"
+	}
+
+	enum Map {
+		static let subtitle = "tab_map"
 	}
 
 	enum Settings {
@@ -51,11 +60,21 @@ enum LocalizationKeys {
 		static let alertMessageFormat = "biometric_alertMessageFormat"
 		static let removeReason       = "biometric_removeReason"
 	}
+
+	enum Toast {
+		static let addedFavoriteFormat   = "toast_addedFavoriteFormat"
+		static let removedFavoriteFormat = "toast_removedFavoriteFormat"
+		static let episodeWatchedFormat  = "toast_episodeWatchedFormat"
+		static let episodeUnwatchedFormat = "toast_episodeUnwatchedFormat"
+	}
 	
 	enum Favorites {
-		static let subtitle = "favorites_subtitle"
-		static let emptyTitle = "favorites_emptyTitle"
+		static let subtitle       = "favorites_subtitle"
+		static let emptyTitle     = "favorites_emptyTitle"
 		static let emptyDescription = "favorites_emptyDescription"
+		static let lockedTitle    = "favorites_lockedTitle"
+		static let unlockButton   = "favorites_unlockButton"
+		static let authReason     = "favorites_authReason"
 	}
 	
 	enum Detail {

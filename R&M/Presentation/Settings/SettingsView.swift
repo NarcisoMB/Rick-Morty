@@ -10,6 +10,7 @@ import LocalAuthentication
 
 struct SettingsView: View {
 	@Environment(LanguageManager.self) private var lang
+	@Environment(\.scenePhase) private var scenePhase
 
 	@State private var viewModel = SettingsViewModel()
 
@@ -26,14 +27,20 @@ struct SettingsView: View {
 			.background(Color.rmBackground)
 			.colorScheme(.dark)
 			.task { self.viewModel.checkBiometricStatus() }
+			.onChange(of: scenePhase) { _, phase in
+				if phase == .active { self.viewModel.checkBiometricStatus() }
+			}
 			.toolbar {
 				ToolbarItem {
 					VStack(spacing: 2) {
-						Text("Rick & Morty").foregroundStyle(.white)
-						Text(self.lang.localized(LocalizationKeys.Settings.subtitle)).foregroundStyle(.white)
+						Text("Rick & Morty")
+							.foregroundStyle(.white)
+						Text(self.lang.localized(LocalizationKeys.Settings.subtitle))
+							.foregroundStyle(.white)
+							.font(.caption)
 					}
 					.frame(maxWidth: .infinity)
-					.padding(.vertical, 4)
+					.padding(.vertical, 8)
 				}
 			}
 			.toolbarBackground(Color.rmBackground, for: .navigationBar)
