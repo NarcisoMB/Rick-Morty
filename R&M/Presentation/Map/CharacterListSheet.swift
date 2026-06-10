@@ -38,6 +38,8 @@ struct CharacterListSheet: View {
             .padding(.bottom, 6)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
+            .accessibilityElement(children: .ignore)
+            .accessibilityIdentifier("panel_handle")
             .onTapGesture {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                     isExpanded.toggle()
@@ -100,6 +102,7 @@ struct CharacterListSheet: View {
                             CharacterMapRow(annotation: annotation)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier("map_character_row")
 
                         if annotation.id != annotations.last?.id {
                             Divider()

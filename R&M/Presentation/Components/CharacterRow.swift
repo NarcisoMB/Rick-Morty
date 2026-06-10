@@ -51,11 +51,14 @@ struct CharacterRow: View {
 				Image(systemName: self.favorites.isFavorite(self.character) ? "heart.fill" : "heart")
 					.foregroundStyle(self.favorites.isFavorite(self.character) ? .red : .secondary)
             }
+            .accessibilityIdentifier("btn_favorite")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(Color.rmCard)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("character_row")
 		.alert(self.lang.localized(LocalizationKeys.Biometric.alertTitle), isPresented: self.$showLockedAlert) {
 			Button(self.lang.localized(LocalizationKeys.CharacterList.cancel), role: .cancel) {
 				self.biometricAuth.resetLock()

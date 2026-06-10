@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		28972AC32FD8F88800B9A552 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 284189E92FD87ADF00F42D9F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 284189F02FD87ADF00F42D9F;
+			remoteInfo = "R&M";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		284189F12FD87ADF00F42D9F /* R&M.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "R&M.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		28972ABD2FD8F88800B9A552 /* R&MUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "R&MUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -16,10 +27,22 @@
 			path = "R&M";
 			sourceTree = "<group>";
 		};
+		28972ABE2FD8F88800B9A552 /* R&MUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "R&MUITests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		284189EE2FD87ADF00F42D9F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		28972ABA2FD8F88800B9A552 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				284189F32FD87ADF00F42D9F /* R&M */,
+				28972ABE2FD8F88800B9A552 /* R&MUITests */,
 				284189F22FD87ADF00F42D9F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				284189F12FD87ADF00F42D9F /* R&M.app */,
+				28972ABD2FD8F88800B9A552 /* R&MUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -53,6 +78,7 @@
 			buildConfigurationList = 284189FC2FD87AE100F42D9F /* Build configuration list for PBXNativeTarget "R&M" */;
 			buildPhases = (
 				284189ED2FD87ADF00F42D9F /* Sources */,
+				28972A352FD8F30500B9A552 /* Run SwiftLint */,
 				284189EE2FD87ADF00F42D9F /* Frameworks */,
 				284189EF2FD87ADF00F42D9F /* Resources */,
 			);
@@ -70,6 +96,29 @@
 			productReference = 284189F12FD87ADF00F42D9F /* R&M.app */;
 			productType = "com.apple.product-type.application";
 		};
+		28972ABC2FD8F88800B9A552 /* R&MUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 28972AC72FD8F88800B9A552 /* Build configuration list for PBXNativeTarget "R&MUITests" */;
+			buildPhases = (
+				28972AB92FD8F88800B9A552 /* Sources */,
+				28972ABA2FD8F88800B9A552 /* Frameworks */,
+				28972ABB2FD8F88800B9A552 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				28972AC42FD8F88800B9A552 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				28972ABE2FD8F88800B9A552 /* R&MUITests */,
+			);
+			name = "R&MUITests";
+			packageProductDependencies = (
+			);
+			productName = "R&MUITests";
+			productReference = 28972ABD2FD8F88800B9A552 /* R&MUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -82,6 +131,10 @@
 				TargetAttributes = {
 					284189F02FD87ADF00F42D9F = {
 						CreatedOnToolsVersion = 26.5;
+					};
+					28972ABC2FD8F88800B9A552 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = 284189F02FD87ADF00F42D9F;
 					};
 				};
 			};
@@ -100,6 +153,7 @@
 			projectRoot = "";
 			targets = (
 				284189F02FD87ADF00F42D9F /* R&M */,
+				28972ABC2FD8F88800B9A552 /* R&MUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -112,7 +166,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		28972ABB2FD8F88800B9A552 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		28972A352FD8F30500B9A552 /* Run SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run SwiftLint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		284189ED2FD87ADF00F42D9F /* Sources */ = {
@@ -122,7 +205,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		28972AB92FD8F88800B9A552 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		28972AC42FD8F88800B9A552 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 284189F02FD87ADF00F42D9F /* R&M */;
+			targetProxy = 28972AC32FD8F88800B9A552 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		284189FA2FD87AE100F42D9F /* Debug */ = {
@@ -163,7 +261,7 @@
 				DEVELOPMENT_TEAM = 7W75CMJVF3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -227,7 +325,7 @@
 				DEVELOPMENT_TEAM = 7W75CMJVF3;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -314,6 +412,48 @@
 			};
 			name = Release;
 		};
+		28972AC52FD8F88800B9A552 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7W75CMJVF3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.baltazar.pase.R-MUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "R&M";
+			};
+			name = Debug;
+		};
+		28972AC62FD8F88800B9A552 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7W75CMJVF3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.baltazar.pase.R-MUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "R&M";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -331,6 +471,15 @@
 			buildConfigurations = (
 				284189FD2FD87AE100F42D9F /* Debug */,
 				284189FE2FD87AE100F42D9F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		28972AC72FD8F88800B9A552 /* Build configuration list for PBXNativeTarget "R&MUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28972AC52FD8F88800B9A552 /* Debug */,
+				28972AC62FD8F88800B9A552 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

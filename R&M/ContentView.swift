@@ -24,6 +24,10 @@ struct ContentView: View {
             }
         }
         .task {
+            if ProcessInfo.processInfo.environment["UI_TESTING_SKIP_SPLASH"] == "1" {
+                showSplash = false
+                return
+            }
             try? await Task.sleep(for: .seconds(2.5))
             withAnimation(.easeOut(duration: 0.6)) { showSplash = false }
         }
@@ -33,7 +37,7 @@ struct ContentView: View {
     }
 
     private var tabContent: some View {
-        TabView(selection: $selectedTab) {
+		TabView(selection: self.$selectedTab) {
             CharacterListView()
                 .tag(0)
                 .tabItem {

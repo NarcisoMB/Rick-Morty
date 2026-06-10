@@ -34,6 +34,7 @@ struct CharacterListView: View {
                 }
                 .padding(.vertical, 4)
             }
+            .accessibilityIdentifier("list_characters")
             .background(Color.rmBackground)
 			.refreshable { await self.viewModel.refresh() }
 			.sheet(item: self.$selectedCharacter) { CharacterDetailView(character: $0) }
@@ -93,6 +94,7 @@ struct CharacterListView: View {
                     } label: {
                         Image(systemName: "magnifyingglass")
                     }
+                    .accessibilityIdentifier("btn_search")
                 }
             }
             .toolbarBackground(Color.rmBackground, for: .navigationBar)
@@ -147,6 +149,7 @@ struct CharacterListView: View {
 							 ? LocalizationKeys.retrying(attempt: self.viewModel.retryAttempt, of: CharacterListViewModel.maxRetries, lang: self.lang)
 							 : self.lang.localized(LocalizationKeys.CharacterList.loading))
             }
+            .accessibilityIdentifier("overlay_loading")
             .ignoresSafeArea()
         }
     }

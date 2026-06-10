@@ -18,14 +18,14 @@ struct FavoritesView: View {
     @State private var authTask: Task<Void, Never>?
     @State private var showSearch = false
     @State private var searchText = ""
-    @State private var filterStatus: String? = nil
-    @State private var filterSpecies: String? = nil
+    @State private var filterStatus: String?
+    @State private var filterSpecies: String?
     @State private var selectedCharacter: Character?
 
     @FocusState private var isSearchFocused: Bool
 
 	private var availableStatuses: [String] { Array(Set(self.favorites.favorites.map { $0.status })).sorted() }
-	private var availableSpecies:  [String] { Array(Set(self.favorites.favorites.map { $0.species })).sorted() }
+	private var availableSpecies: [String] { Array(Set(self.favorites.favorites.map { $0.species })).sorted() }
 
     private var filtered: [Character] {
 		var result = self.favorites.favorites
@@ -37,7 +37,7 @@ struct FavoritesView: View {
                 $0.species.lowercased().contains(query)
             }
         }
-		if let status = self.filterStatus   { result = result.filter { $0.status == status } }
+		if let status = self.filterStatus { result = result.filter { $0.status == status } }
 		if let species = self.filterSpecies { result = result.filter { $0.species == species } }
         return result
     }
@@ -80,7 +80,10 @@ struct FavoritesView: View {
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
             }
+            .accessibilityIdentifier("btn_unlock")
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("screen_locked")
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.rmBackground)
         .colorScheme(.dark)
@@ -95,6 +98,7 @@ struct FavoritesView: View {
                         systemImage: "heart.slash",
 						description: Text(self.lang.localized(LocalizationKeys.Favorites.emptyDescription))
                     )
+                    .accessibilityIdentifier("view_favorites_empty")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.rmBackground)
                 } else {
@@ -108,6 +112,7 @@ struct FavoritesView: View {
                         }
                         .padding(.vertical, 4)
                     }
+                    .accessibilityIdentifier("list_favorites")
                     .background(Color.rmBackground)
                 }
             }
@@ -161,6 +166,11 @@ struct FavoritesView: View {
     }
 
     private func attemptUnlock() async {
+        switch ProcessInfo.processInfo.environment["UI_TESTING_BYPASS_AUTH"] {
+        case "1": isUnlocked = true; return
+        case "0": return  // stay locked in UI tests
+        default: break
+        }
         let reason = lang.localized(LocalizationKeys.Favorites.authReason)
         let result = await biometricAuth.authenticate(reason: reason)
         guard !Task.isCancelled else { return }
