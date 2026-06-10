@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct R_MApp: App {
+struct RickAndMortyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -18,12 +18,12 @@ enum NetworkError: Error, LocalizedError {
         switch self {
         case .invalidURL:
             return lang.localized(LocalizationKeys.Network.invalidUrl)
-        case .decodingFailed(let e):
-            return lang.localized(LocalizationKeys.Network.decodingFormat, e.localizedDescription)
+        case .decodingFailed(let error):
+            return lang.localized(LocalizationKeys.Network.decodingFormat, error.localizedDescription)
         case .serverError(let code):
             return lang.localized(LocalizationKeys.Network.serverFormat, code)
-        case .unknown(let e):
-            return e.localizedDescription
+        case .unknown(let error):
+            return error.localizedDescription
         }
     }
 

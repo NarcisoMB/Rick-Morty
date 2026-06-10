@@ -10,5 +10,5 @@ import Observation
 @Observable final class MapNavigationManager {
     static let shared = MapNavigationManager()
     private init() {}
-    var pendingCharacter: Character? = nil
+    var pendingCharacter: Character?
 }

@@ -1,0 +1,7 @@
+disabled_rules: # Turn off default rules you dislike
+  - line_length
+  - trailing_whitespace
+
+included: # Tell SwiftLint which folders to scan
+  - "Rick & Morty"
+  - "R&M"

@@ -9,11 +9,11 @@ import SwiftUI
 
 private struct TopLeftTriangle: Shape {
     func path(in rect: CGRect) -> Path {
-        Path { p in
-            p.move(to: CGPoint(x: rect.minX, y: rect.minY))
-            p.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-            p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-            p.closeSubpath()
+        Path { path in
+            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+            path.closeSubpath()
         }
     }
 }
@@ -33,7 +33,7 @@ struct EpisodeGridView: View {
         ("S4", 32...41),
         ("S5", 42...51),
         ("S6", 52...61),
-        ("S7", 62...71),
+        ("S7", 62...71)
     ]
 
     private var visibleSeasons: [(label: String, range: ClosedRange<Int>)] {
@@ -61,10 +61,10 @@ struct EpisodeGridView: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 22, alignment: .leading)
 
-            ForEach(Array(season.range), id: \.self) { ep in
-                let active = self.episodeSet.contains(ep)
-                let watched = self.watchedManager.isWatched(ep)
-                let label = ep - season.range.lowerBound + 1
+            ForEach(Array(season.range), id: \.self) { episode in
+                let active = self.episodeSet.contains(episode)
+                let watched = self.watchedManager.isWatched(episode)
+                let label = episode - season.range.lowerBound + 1
                 ZStack {
                     if active && watched {
                         RoundedRectangle(cornerRadius: 4).fill(Color.green)
@@ -81,12 +81,12 @@ struct EpisodeGridView: View {
                 }
                 .frame(width: 22, height: 22)
                 .onTapGesture {
-                    let wasWatched = self.watchedManager.isWatched(ep)
-                    self.watchedManager.toggle(ep)
+                    let wasWatched = self.watchedManager.isWatched(episode)
+                    self.watchedManager.toggle(episode)
                     let key = wasWatched
                         ? LocalizationKeys.Toast.episodeUnwatchedFormat
                         : LocalizationKeys.Toast.episodeWatchedFormat
-                    let msg = self.lang.localized(key, ep)
+                    let msg = self.lang.localized(key, episode)
                     Task { await MainActor.run { self.toast.show(msg) } }
                 }
             }

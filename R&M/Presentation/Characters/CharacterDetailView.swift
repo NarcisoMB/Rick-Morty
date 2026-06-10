@@ -120,7 +120,7 @@ struct CharacterDetailView: View {
 			.presentationBackground(Color.rmBackground)
 			.presentationDragIndicator(.visible)
 			.presentationDetents([.height(self.contentHeight)])
-			.alert(lang.localized(LocalizationKeys.Biometric.alertTitle), isPresented: $showLockedAlert) {
+			.alert(lang.localized(LocalizationKeys.Biometric.alertTitle), isPresented: self.$showLockedAlert) {
 				Button(lang.localized(LocalizationKeys.CharacterList.cancel), role: .cancel) {
 					biometricAuth.resetLock()
 				}

@@ -35,9 +35,9 @@ private extension UIImage {
         var images: [UIImage] = []
         var totalDuration = 0.0
 
-        for i in 0..<count {
-            guard let cgImage = CGImageSourceCreateImageAtIndex(source, i, nil) else { continue }
-            let delay = frameDelay(source: source, index: i)
+        for index in 0..<count {
+            guard let cgImage = CGImageSourceCreateImageAtIndex(source, index, nil) else { continue }
+            let delay = frameDelay(source: source, index: index)
             totalDuration += delay
             images.append(UIImage(cgImage: cgImage))
         }
