@@ -11,47 +11,33 @@ import Foundation
 @Observable final class FavoritesManager {
     static let shared = FavoritesManager()
 
-    private let userDefaults: UserDefaults
+    private let repository: FavoriteRepositoryProtocol
     private(set) var favorites: [Character] = []
 
     private init() {
-        self.userDefaults = .standard
-        load()
-        // Clear persisted favorites at launch during UI tests so each run starts clean.
+        self.repository = FavoriteRepository()
+        self.favorites = self.repository.load()
         if ProcessInfo.processInfo.environment["UI_TESTING_BYPASS_AUTH"] != nil {
-            favorites = []
-            userDefaults.removeObject(forKey: "rm_favorites")
+            self.favorites = []
+            self.repository.save([])
         }
     }
 
-    init(userDefaults: UserDefaults) {
-        self.userDefaults = userDefaults
-        load()
+    init(repository: FavoriteRepositoryProtocol) {
+        self.repository = repository
+        self.favorites = repository.load()
     }
 
     func toggle(_ character: Character) {
-		if self.isFavorite(character) {
-			self.favorites.removeAll { $0.id == character.id }
+        if self.isFavorite(character) {
+            self.favorites.removeAll { $0.id == character.id }
         } else {
-			self.favorites.append(character)
+            self.favorites.append(character)
         }
-		self.save()
+        self.repository.save(self.favorites)
     }
 
     func isFavorite(_ character: Character) -> Bool {
-		self.favorites.contains { $0.id == character.id }
-    }
-
-    private func save() {
-		guard let data = try? JSONEncoder().encode(self.favorites) else { return }
-        userDefaults.set(data, forKey: "rm_favorites")
-    }
-
-    private func load() {
-        guard
-            let data = userDefaults.data(forKey: "rm_favorites"),
-            let decoded = try? JSONDecoder().decode([Character].self, from: data)
-        else { return }
-		self.favorites = decoded
+        self.favorites.contains { $0.id == character.id }
     }
 }

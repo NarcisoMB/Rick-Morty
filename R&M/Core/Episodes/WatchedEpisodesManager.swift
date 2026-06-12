@@ -12,11 +12,18 @@ import Observation
 final class WatchedEpisodesManager {
     static let shared = WatchedEpisodesManager()
 
+    private let repository: WatchedEpisodesRepositoryProtocol
     private(set) var watched: Set<Int>
 
     private init() {
-        let saved = UserDefaults.standard.array(forKey: "rm_watchedEpisodes") as? [Int] ?? []
-		self.watched = Set(saved)
+        let repo = WatchedEpisodesRepository()
+        self.repository = repo
+        self.watched = repo.load()
+    }
+
+    init(repository: WatchedEpisodesRepositoryProtocol) {
+        self.repository = repository
+        self.watched = repository.load()
     }
 
     func toggle(_ episode: Int) {
@@ -25,7 +32,7 @@ final class WatchedEpisodesManager {
         } else {
 			self.watched.insert(episode)
         }
-		UserDefaults.standard.set(Array(self.watched), forKey: "rm_watchedEpisodes")
+		self.repository.save(self.watched)
     }
 
     func isWatched(_ episode: Int) -> Bool {

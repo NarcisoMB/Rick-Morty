@@ -14,7 +14,19 @@ enum NetworkError: Error, LocalizedError {
     case unknown(Error)
 
     var errorDescription: String? {
-        let lang = LanguageManager.shared
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .decodingFailed(let error):
+            return "Decoding failed: \(error.localizedDescription)"
+        case .serverError(let code):
+            return "Server error: \(code)"
+        case .unknown(let error):
+            return error.localizedDescription
+        }
+    }
+
+    func localizedMessage(lang: LanguageManager) -> String {
         switch self {
         case .invalidURL:
             return lang.localized(LocalizationKeys.Network.invalidUrl)
@@ -27,7 +39,6 @@ enum NetworkError: Error, LocalizedError {
         }
     }
 
-    // 4xx y decodificación no se recuperan con reintentos
     var isRetryable: Bool {
         switch self {
         case .serverError(let code): !(400..<500).contains(code)

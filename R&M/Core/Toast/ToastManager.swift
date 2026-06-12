@@ -19,8 +19,8 @@ final class ToastManager {
 
     @MainActor
     func show(_ message: String) {
-        dismissTask?.cancel()
-        dismissWindow(animated: false)
+        self.dismissTask?.cancel()
+        self.dismissWindow(animated: false)
 
         guard let scene = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
@@ -39,24 +39,24 @@ final class ToastManager {
 
         window.alpha = 0
         window.isHidden = false
-        toastWindow = window
+        self.toastWindow = window
 
         UIView.animate(withDuration: 0.35, delay: 0,
                        usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5) {
             window.alpha = 1
         }
 
-        dismissTask = Task { @MainActor in
+        self.dismissTask = Task { @MainActor in
             try? await Task.sleep(for: .seconds(2.5))
             guard !Task.isCancelled else { return }
-            dismissWindow(animated: true)
+            self.dismissWindow(animated: true)
         }
     }
 
     @MainActor
     private func dismissWindow(animated: Bool) {
-        guard let window = toastWindow else { return }
-        toastWindow = nil
+        guard let window = self.toastWindow else { return }
+        self.toastWindow = nil
         guard animated else { window.isHidden = true; return }
         UIView.animate(withDuration: 0.25) {
             window.alpha = 0

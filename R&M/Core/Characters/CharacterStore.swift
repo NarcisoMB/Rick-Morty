@@ -24,6 +24,6 @@ import Observation
     }
 
     func reset() {
-        characters = []
+        self.characters = []
     }
 }

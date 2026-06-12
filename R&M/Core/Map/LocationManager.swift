@@ -22,23 +22,23 @@ extension CLLocationCoordinate2D: @retroactive Equatable {
 
     private override init() {
         super.init()
-        manager.delegate = self
-        authorizationStatus = manager.authorizationStatus
+        self.manager.delegate = self
+        self.authorizationStatus = self.manager.authorizationStatus
     }
 
     func requestWhenInUse() {
-        manager.requestWhenInUseAuthorization()
+        self.manager.requestWhenInUseAuthorization()
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authorizationStatus = manager.authorizationStatus
-        if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
+        self.authorizationStatus = manager.authorizationStatus
+        if self.authorizationStatus == .authorizedWhenInUse || self.authorizationStatus == .authorizedAlways {
             manager.requestLocation()
         }
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        userLocation = locations.last?.coordinate
+        self.userLocation = locations.last?.coordinate
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
