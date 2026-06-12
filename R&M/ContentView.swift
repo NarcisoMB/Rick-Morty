@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(LanguageManager.self) private var lang
     @Environment(MapNavigationManager.self) private var mapNav
+    @Environment(BiometricAuthManager.self) private var biometricAuth
 
     @State private var selectedTab = 0
     @State private var showSplash = true
@@ -28,12 +29,26 @@ struct ContentView: View {
                 showSplash = false
                 return
             }
-            try? await Task.sleep(for: .seconds(2.5))
-            withAnimation(.easeOut(duration: 0.6)) { showSplash = false }
-        }
-        .onChange(of: mapNav.pendingCharacter) { _, character in
-            if character != nil { selectedTab = 2 }
-        }
+			try? await Task.sleep(for: .seconds(2.5))
+			withAnimation(.easeOut(duration: 0.6)) { showSplash = false }
+		}
+		.onChange(of: mapNav.pendingCharacter) { _, character in
+			if character != nil { selectedTab = 2 }
+		}
+		.fullScreenCover(
+			isPresented:
+					.init(
+						get: { self.biometricAuth.pendingChallenge != nil },
+						set: { _ in }
+					)
+			, onDismiss: {
+				self.biometricAuth.cancelChallenge()
+			}, content: {
+				if let challenge = self.biometricAuth.pendingChallenge {
+					ArithmeticChallengeView(challenge: challenge)
+				}
+			}
+		)
     }
 
     private var tabContent: some View {
