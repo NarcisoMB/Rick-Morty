@@ -14,6 +14,10 @@ struct ContentView: View {
 
     @State private var selectedTab = 0
     @State private var showSplash = true
+    @State private var characterListViewModel = CharacterListViewModel(
+        useCase: GetCharactersUseCase(repository: CharacterRepository())
+    )
+    @State private var characterMapViewModel = CharacterMapViewModel()
 
     var body: some View {
         ZStack {
@@ -26,11 +30,11 @@ struct ContentView: View {
         }
         .task {
             if ProcessInfo.processInfo.environment["UI_TESTING_SKIP_SPLASH"] == "1" {
-                showSplash = false
+                self.showSplash = false
                 return
             }
 			try? await Task.sleep(for: .seconds(2.5))
-			withAnimation(.easeOut(duration: 0.6)) { showSplash = false }
+			withAnimation(.easeOut(duration: 0.6)) { self.showSplash = false }
 		}
 		.onChange(of: mapNav.pendingCharacter) { _, character in
 			if character != nil { selectedTab = 2 }
@@ -53,7 +57,7 @@ struct ContentView: View {
 
     private var tabContent: some View {
 		TabView(selection: self.$selectedTab) {
-            CharacterListView()
+            CharacterListView(viewModel: characterListViewModel)
                 .tag(0)
                 .tabItem {
                     Label(self.lang.localized(LocalizationKeys.Tab.characters), systemImage: "person.3")
@@ -63,7 +67,7 @@ struct ContentView: View {
                 .tabItem {
                     Label(self.lang.localized(LocalizationKeys.Tab.favorites), systemImage: "heart")
                 }
-            CharacterMapView()
+            CharacterMapView(viewModel: characterMapViewModel)
                 .tag(2)
                 .tabItem {
                     Label(self.lang.localized(LocalizationKeys.Tab.map), systemImage: "map")

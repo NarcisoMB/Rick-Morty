@@ -10,7 +10,7 @@ import SwiftUI
 struct CharacterListView: View {
     @Environment(LanguageManager.self) private var lang
 
-    @State private var viewModel = CharacterListViewModel()
+    @Bindable var viewModel: CharacterListViewModel
     @State private var showSearch = false
     @State private var selectedCharacter: Character?
 
@@ -69,7 +69,7 @@ struct CharacterListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-						self.lang.setLanguage(self.lang.language == "en" ? "es" : "en")
+                        viewModel.toggleLanguage()
                     } label: {
 						Text(self.lang.language == "en" ? "ES" : "EN").bold()
                     }
@@ -156,7 +156,7 @@ struct CharacterListView: View {
 }
 
 #Preview {
-    CharacterListView()
+    CharacterListView(viewModel: CharacterListViewModel(useCase: GetCharactersUseCase(repository: CharacterRepository())))
         .environment(LanguageManager.shared)
         .environment(FavoritesManager.shared)
 }

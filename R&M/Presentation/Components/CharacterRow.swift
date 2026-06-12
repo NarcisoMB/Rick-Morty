@@ -9,16 +9,13 @@ import SwiftUI
 
 struct CharacterRow: View {
     let character: Character
-    @Environment(LanguageManager.self) private var lang
-    @Environment(FavoritesManager.self) private var favorites
-    @Environment(BiometricAuthManager.self) private var biometricAuth
-    @Environment(ToastManager.self) private var toast
 
-    @State private var showLockedAlert = false
+    @Environment(LanguageManager.self) private var lang
+    @State private var favoriteVM = FavoriteActionViewModel()
 
     var body: some View {
         HStack(spacing: 12) {
-			CachedAsyncImage(url: self.character.image) { image in
+            CachedAsyncImage(url: self.character.image) { image in
                 image.resizable().scaledToFill()
             } placeholder: {
                 Color.gray.opacity(0.3)
@@ -27,29 +24,23 @@ struct CharacterRow: View {
             .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {
-				Text(self.character.name)
+                Text(self.character.name)
                     .font(.headline)
-				Text(self.character.species)
+                Text(self.character.species)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-				Text(self.character.status)
+                Text(self.character.status)
                     .font(.caption)
-					.foregroundStyle(self.character.statusColor)
+                    .foregroundStyle(self.character.statusColor)
             }
 
             Spacer()
 
             Button {
-				if self.favorites.isFavorite(self.character) {
-					Task { await self.removeWithAuth() }
-                } else {
-					self.favorites.toggle(self.character)
-					let msg = self.lang.localized(LocalizationKeys.Toast.addedFavoriteFormat, self.character.name)
-					Task { await MainActor.run { self.toast.show(msg) } }
-                }
+                Task { await favoriteVM.toggleFavorite(character) }
             } label: {
-				Image(systemName: self.favorites.isFavorite(self.character) ? "heart.fill" : "heart")
-					.foregroundStyle(self.favorites.isFavorite(self.character) ? .red : .secondary)
+                Image(systemName: favoriteVM.isFavorite(character) ? "heart.fill" : "heart")
+                    .foregroundStyle(favoriteVM.isFavorite(character) ? .red : .secondary)
             }
             .accessibilityIdentifier("btn_favorite")
         }
@@ -59,24 +50,15 @@ struct CharacterRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("character_row")
-		.alert(self.lang.localized(LocalizationKeys.Biometric.alertTitle), isPresented: self.$showLockedAlert) {
-			Button(self.lang.localized(LocalizationKeys.CharacterList.cancel), role: .cancel) {
-				self.biometricAuth.resetLock()
+        .alert(lang.localized(LocalizationKeys.Biometric.alertTitle), isPresented: .init(
+            get: { favoriteVM.showLockedAlert },
+            set: { if !$0 { favoriteVM.dismissLockedAlert() } }
+        )) {
+            Button(lang.localized(LocalizationKeys.CharacterList.cancel), role: .cancel) {
+                favoriteVM.dismissLockedAlert()
             }
         } message: {
-			Text(LocalizationKeys.biometricAlertMessage(attempts: BiometricAuthManager.maxAttempts, lang: self.lang))
-        }
-    }
-
-    private func removeWithAuth() async {
-        let reason = self.lang.localized(LocalizationKeys.Biometric.removeReason)
-        let authorized = await self.biometricAuth.authorizeRemoval(reason: reason)
-        if authorized {
-            self.favorites.toggle(character)
-            let msg = self.lang.localized(LocalizationKeys.Toast.removedFavoriteFormat, self.character.name)
-            await MainActor.run { self.toast.show(msg) }
-        } else if self.biometricAuth.isLocked {
-            self.showLockedAlert = true
+            Text(LocalizationKeys.biometricAlertMessage(attempts: BiometricAuthManager.maxAttempts, lang: lang))
         }
     }
 }

@@ -45,7 +45,7 @@ struct ArithmeticChallengeView: View {
 
                 HStack {
                     Button("Cancelar") {
-                        biometricAuth.cancelChallenge()
+                        self.biometricAuth.cancelChallenge()
                     }
                     .foregroundStyle(.white)
                     .font(.body)
@@ -54,15 +54,15 @@ struct ArithmeticChallengeView: View {
                     Color.clear.frame(maxWidth: .infinity)
 
                     Button {
-                        deleteDigit()
+                        self.deleteDigit()
                     } label: {
                         Image(systemName: "delete.left")
                             .font(.title3)
                             .foregroundStyle(.white)
                     }
                     .frame(maxWidth: .infinity)
-                    .opacity(input.isEmpty ? 0 : 1)
-                    .animation(.easeInOut(duration: 0.15), value: input.isEmpty)
+                    .opacity(self.input.isEmpty ? 0 : 1)
+                    .animation(.easeInOut(duration: 0.15), value: self.input.isEmpty)
                 }
                 .padding(.horizontal, 40)
                 .padding(.bottom, 40)
@@ -73,15 +73,15 @@ struct ArithmeticChallengeView: View {
     }
 
     private var inputDisplay: some View {
-        Text(input.isEmpty ? "—" : input)
+        Text(self.input.isEmpty ? "—" : self.input)
             .font(.system(size: 48, weight: .thin, design: .monospaced))
-            .foregroundStyle(input.isEmpty ? Color.white.opacity(0.3) : Color.white)
+            .foregroundStyle(self.input.isEmpty ? Color.white.opacity(0.3) : Color.white)
             .frame(minWidth: 120)
             .padding(.horizontal, 24)
             .padding(.vertical, 10)
             .background(Color.white.opacity(0.08))
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .animation(.easeInOut(duration: 0.1), value: input)
+            .animation(.easeInOut(duration: 0.1), value: self.input)
     }
 
     private var numericPad: some View {
@@ -103,8 +103,8 @@ struct ArithmeticChallengeView: View {
 
     private func digitButton(_ digit: Int) -> some View {
         Button {
-            guard input.count < maxDigits else { return }
-            input.append("\(digit)")
+            guard self.input.count < self.maxDigits else { return }
+            self.input.append("\(digit)")
         } label: {
             ZStack {
                 Circle()
@@ -120,48 +120,48 @@ struct ArithmeticChallengeView: View {
 
     private var confirmButton: some View {
         Button {
-            verify()
+            self.verify()
         } label: {
             ZStack {
                 Circle()
-                    .fill(input.isEmpty ? Color.clear : Color.accentColor)
+                    .fill(self.input.isEmpty ? Color.clear : Color.accentColor)
                     .frame(width: 80, height: 80)
                 Image(systemName: "arrow.right")
                     .font(.title2)
                     .foregroundStyle(.white)
-                    .opacity(input.isEmpty ? 0 : 1)
+                    .opacity(self.input.isEmpty ? 0 : 1)
             }
-            .animation(.easeInOut(duration: 0.15), value: input.isEmpty)
+            .animation(.easeInOut(duration: 0.15), value: self.input.isEmpty)
         }
         .buttonStyle(.plain)
-        .disabled(input.isEmpty)
+        .disabled(self.input.isEmpty)
     }
 
     private func deleteDigit() {
-        guard !input.isEmpty else { return }
-        input.removeLast()
+        guard !self.input.isEmpty else { return }
+        self.input.removeLast()
     }
 
     private func verify() {
-        guard let value = Int(input) else {
-            triggerShake()
+        guard let value = Int(self.input) else {
+            self.triggerShake()
             return
         }
-        if value == challenge.answer {
-            biometricAuth.submitChallengeAnswer(value)
+        if value == self.challenge.answer {
+            self.biometricAuth.submitChallengeAnswer(value)
         } else {
-            triggerShake()
-            input = ""
+            self.triggerShake()
+            self.input = ""
         }
     }
 
     private func triggerShake() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.3)) {
-            shakeOffset = 12
+            self.shakeOffset = 12
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.3)) {
-                shakeOffset = 0
+                self.shakeOffset = 0
             }
         }
     }
