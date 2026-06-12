@@ -12,8 +12,7 @@ struct EpisodeListView: View {
 
     @Environment(LanguageManager.self) private var lang
     @State private var isExpanded = false
-    @State private var episodes: [Episode] = []
-    @State private var isLoading = false
+    @State private var viewModel = EpisodeListViewModel()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,7 +26,7 @@ struct EpisodeListView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal, 16)
         .animation(.easeInOut(duration: 0.2), value: self.isExpanded)
-        .task { await fetchEpisodes() }
+        .task { await viewModel.load(ids: episodeIDs) }
     }
 
     private var header: some View {
@@ -52,15 +51,15 @@ struct EpisodeListView: View {
 	
 	@ViewBuilder
 	private var content: some View {
-        if isLoading {
+		if self.viewModel.isLoading {
             ProgressView()
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
         } else {
             LazyVStack(spacing: 0) {
-                ForEach(episodes) { episode in
+				ForEach(self.viewModel.episodes) { episode in
                     VStack(spacing: 0) {
-                        if episode.id != episodes.first?.id {
+						if episode.id != self.viewModel.episodes.first?.id {
                             Divider()
                                 .padding(.leading, 16)
                                 .background(Color.rmBackground)
@@ -83,15 +82,4 @@ struct EpisodeListView: View {
         }
     }
 
-    private func fetchEpisodes() async {
-        guard !episodeIDs.isEmpty else { return }
-        isLoading = true
-        do {
-            let response: EpisodeResponseDTO = try await HTTPClient().get(.episodes(ids: episodeIDs))
-            episodes = response.items.map { $0.toDomain() }
-        } catch {
-            episodes = []
-        }
-        isLoading = false
-    }
 }
